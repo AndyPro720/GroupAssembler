@@ -3,6 +3,7 @@
 
 class assemble {
  
+   char data[20]; 
    std::string file_name;
    std::string raw_instructions; 
    bool io_state = false;
@@ -21,7 +22,10 @@ class assemble {
 
                      if (i_file_handle.is_open()) {   //get input in raw_instructions and close file. 
                         std::cout << "File Opened sucessfully \n";
-                        //get input in var
+                           while (std::getline(i_file_handle, raw_instructions, '=')) {
+                           std::cout << raw_instructions << " **";
+                        }
+                        std::cout << "\n" << raw_instructions;
                         i_file_handle.close(); 
                         return 0;
                         }
@@ -44,6 +48,7 @@ class assemble {
 
 int main()
     {
+
        assemble code;
        
        code.file_handler();
