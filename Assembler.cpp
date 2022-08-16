@@ -3,8 +3,6 @@
 
 class assemble {
  
-   char data[20]; 
-   std::string file_name;
    std::string raw_instructions; 
    bool io_state = false;
    
@@ -12,26 +10,30 @@ class assemble {
 
    int file_handler() {     //method for file I/O management
 
+      std::string file_name;
       if (io_state == 0) {  //Input file handler
             std::fstream i_file_handle;
-             while (true)    
+             while (true)   //open file    
                {
-                  std::cout << "Input the file name (without extension)    -----       ctrl+c to exit\n";
+                  std::cout << "Input the file name (without extension)    <----->       ctrl+c to exit\n";
                   std::getline(std::cin, file_name);
                   i_file_handle.open(file_name+".asm", std::ifstream::in); 
 
-                     if (i_file_handle.is_open()) {   //get input in raw_instructions and close file. 
-                        std::cout << "File Opened sucessfully \n";
-                           while (std::getline(i_file_handle, raw_instructions, '=')) {
-                           std::cout << raw_instructions << " **";
-                        }
-                        std::cout << "\n" << raw_instructions;
+                     if (i_file_handle.seekg(0, std::ios::end)) {   //get data in raw_instructions and close file. 
+                        
+                        raw_instructions.resize(i_file_handle.tellg());
+                        i_file_handle.seekg(std::ios::beg);
+                        i_file_handle.read(&raw_instructions[0], raw_instructions.size()); //read the file and store it
+
+                        std::cout << "File Read Successfully. \n"; 
+                        std::cout << "************************ \n"; 
                         i_file_handle.close(); 
                         return 0;
                         }
 
                      else {
                          std::cout << "Couldn't find the named file.\n";
+                         std::cout << "************************ \n"; 
                         }
                 }
          }
@@ -39,6 +41,7 @@ class assemble {
          std::fstream o_file_handle;
          o_file_handle.open(file_name+".hack", std::ofstream::out | std::ofstream::trunc);
          std::cout << "Created the output file, processing assembly";
+         return 0;
       }
    }   
 }; 
@@ -52,6 +55,5 @@ int main()
        assemble code;
        
        code.file_handler();
-       return 0;
        return 0;
     }
