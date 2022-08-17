@@ -2,17 +2,9 @@ import java.io.*;
 import java.util.Scanner;
 
 class AssemblerDesign{
-    //code to create new file
    
-    public void filehandler(){
-    File myfile=new File("C:/Users/mites/OneDrive/Documents/GitHub/GroupAssembler/code.asm");
-    try {
-        myfile.createNewFile();
-    } catch (IOException e) {
-        System.out.println("Unable to create a file");
-        
-    }
     //code to read a file
+    public void filehandler(){
     File filereader=new File("C:/Users/mites/OneDrive/Documents/GitHub/GroupAssembler/code.asm");
      try {
         Scanner sc=new Scanner(filereader);
@@ -27,9 +19,9 @@ class AssemblerDesign{
 
 }
     
-     
+}   
 
-}
+
 
 public class assembler{
     public static void main(String []args){
