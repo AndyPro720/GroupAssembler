@@ -4,7 +4,7 @@ import java.util.Scanner;
 class AssemblerDesign{
     //code to create new file
     public static void filehandler(){
-    File myfile=new File("code.asm");
+    File myfile=new File("C:\Users\mites\OneDrive\Documents\GitHub\GroupAssembler\code.asm");
     try {
         myfile.createNewFile();
     } catch (IOException e) {
@@ -12,7 +12,7 @@ class AssemblerDesign{
         
     }
     //code to read a file
-    File filereader=new File("code.asm");
+    File filereader=new File("C:\Users\mites\OneDrive\Documents\GitHub\GroupAssembler\code.asm");
      try {
         Scanner sc=new Scanner(filereader);
         while(sc.hasNextLine()){
