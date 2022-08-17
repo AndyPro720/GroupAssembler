@@ -1,46 +1,29 @@
 import java.io.*;
+import java.util.*;
 
 public class Assembler {
 
-    public void fileHandler() {
+    public void fileHandler() throws FileNotFoundException {
         
-        File f = new File("/Users/apple/Documents/GitHub/GroupAssembler/code.asm");
-        InputStream is = null;
-        BufferedInputStream bis = null;
+        Scanner sc = new Scanner(System.in);
+        String file = sc.nextLine();    
+        System.out.println("Enter the filename : " + file);   
+        File f = new File(file + ".asm");       //Follow the API for file input
+        
+        Scanner scan = new Scanner(new FileReader(f));
 
-        try {
-          
-            is = new FileInputStream(f);
-            bis = new BufferedInputStream(is);
+      
 
-            while(bis.available() > 0)
-                System.out.print((char)bis.read());
-
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-         
-            try {
-            
-                if(is != null && bis != null) {
+            while(scan.hasNext()) {
                 
-                    is.close();
-                    bis.close();
-
-                }
-
-            }
-            catch(Exception e) {
-                e.printStackTrace();
+                System.out.print(scan.nextLine());
             }
 
-        } 
+        
         
     }
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws FileNotFoundException {
         
         Assembler asmb = new Assembler();
 
