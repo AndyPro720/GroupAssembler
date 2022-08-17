@@ -3,27 +3,30 @@ import java.util.*;
 
 public class Assembler {
 
-    public void fileHandler() throws FileNotFoundException {
+    public char ch;
+
+    public void fileHandler() throws FileNotFoundException, IOException {
         
         Scanner sc = new Scanner(System.in);
         String file = sc.nextLine();    
         System.out.println("Enter the filename : " + file);   
-        File f = new File(file + ".asm");       //Follow the API for file input
+        File f = new File(file + ".asm");       //Creates instance of the file taken from input
         
-        Scanner scan = new Scanner(new FileReader(f));
-
-      
-
-            while(scan.hasNext()) {
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
+            
+        while(bis.available() > 0) {     //reads bytes from file as long as they're available
                 
-                System.out.print(scan.nextLine());
-            }
+            ch = (char)bis.read();
+            System.out.print(ch);       //prints file contentss
 
-        
+        }
+
+        sc.close();
+        bis.close();
         
     }
 
-    public static void main(String args[]) throws FileNotFoundException {
+    public static void main(String args[]) throws FileNotFoundException, IOException {
         
         Assembler asmb = new Assembler();
 
