@@ -4,15 +4,15 @@ import java.util.Scanner;
 class AssemblerDesign{
     //code to create new file
     public static void filehandler(){
-    File myfile=new File("assemblerfile.txt");
+    File myfile=new File("code.asm");
     try {
         myfile.createNewFile();
     } catch (IOException e) {
         System.out.println("Unable to create a file");
         
     }
-    //code too read a file
-    File filereader=new File("assemblerfile.txt");
+    //code to read a file
+    File filereader=new File("code.asm");
      try {
         Scanner sc=new Scanner(filereader);
         while(sc.hasNextLine()){
