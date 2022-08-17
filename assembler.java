@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Assembler {
 
-    public char ch;
+    public String s;
 
     public void fileHandler() throws FileNotFoundException, IOException {
         
@@ -12,17 +12,18 @@ public class Assembler {
         System.out.println("Enter the filename : " + file);   
         File f = new File(file + ".asm");       //Creates instance of the file taken from input
         
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
+        BufferedReader br = new BufferedReader(new FileReader(f));
+        s = br.readLine();
             
-        while(bis.available() > 0) {     //reads bytes from file as long as they're available
+        while(s != null) {     //reads bytes from file as long as they're available
                 
-            ch = (char)bis.read();
-            System.out.print(ch);       //prints file contentss
+            System.out.println(s);       //prints file contents
+            s = br.readLine();
 
         }
 
         sc.close();
-        bis.close();
+        br.close();
         
     }
 
