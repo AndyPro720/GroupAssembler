@@ -1,32 +1,29 @@
 import java.io.*;
 import java.util.Scanner;
 
-class AssemblerDesign{
-   
-    //code to read a file
-    public void filehandler(){
-    File filereader=new File("C:/Users/mites/OneDrive/Documents/GitHub/GroupAssembler/code.asm");
-     try {
-        Scanner sc=new Scanner(filereader);
-        while(sc.hasNextLine()){
-            String line=sc.nextLine();
-            System.out.println(line);
+public class assembler {
+    public static void filehandler(){
+        System.out.println("Enter file name");
+        Scanner sc=new Scanner(System.in);
+        String filename=sc.nextLine();
+        File filereader=new File("./"+filename+".asm");
+        try {
+            Scanner scn=new Scanner(filereader);//var
+            //  String read=scn.readline();
+            while(scn.hasNextLine()){
+                String line=scn.nextLine();
+                System.out.println(line);
+            }
+
+            sc.close();//var me input the whole file
+        } catch (Exception e) {
+            System.out.println("File not found");
+            System.out.println(e);
         }
-        sc.close();
-     } catch (FileNotFoundException e) {
-        System.out.println("File not found");
-     }
-
-}
-    
-}   
-
-
-
-public class assembler{
-    public static void main(String []args){
-       AssemblerDesign obj=new AssemblerDesign();
-       obj.filehandler();
+    }
+    public static void main(String []args) {
+            filehandler();
+        }
       
-    } 
+    
  }
