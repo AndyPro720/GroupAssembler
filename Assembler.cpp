@@ -2,8 +2,9 @@
 #include<fstream> 
 
 class assemble {
+   public:
  
-   std::string raw_instructions; 
+   std::string instructions; 
    bool io_state = false;
    
    public:
@@ -19,11 +20,11 @@ class assemble {
                   std::getline(std::cin, file_name);
                   i_file_handle.open(file_name+".asm", std::ifstream::in); 
 
-                     if (i_file_handle.seekg(0, std::ios::end)) {   //get data in raw_instructions and close file. 
+                     if (i_file_handle.seekg(0, std::ios::end)) {   //get data in instructions and close file. 
                         
-                        raw_instructions.resize(i_file_handle.tellg());
+                        instructions.resize(i_file_handle.tellg());
                         i_file_handle.seekg(std::ios::beg);
-                        i_file_handle.read(&raw_instructions[0], raw_instructions.size()); //read the file and store it
+                        i_file_handle.read(&instructions[0], instructions.size()); //read the file and store it
 
                         std::cout << "File Read Successfully. \n"; 
                         std::cout << "************************ \n"; 
@@ -44,6 +45,14 @@ class assemble {
          return 0;
       }
    }   
+   void clr_space() {      //method to clear whitespace and comments from code
+      std::string clean;
+
+      while(std::getline(, clean)) {
+
+      } 
+
+   }
 }; 
 
 
@@ -55,5 +64,6 @@ int main()
        assemble code;
        
        code.file_handler();
+       std::cout << instructions;
        return 0;
     }
