@@ -6,7 +6,7 @@ public class Assembler {
     public String instructions = "";
     BufferedReader br;
 
-    public void file_handler() throws FileNotFoundException, IOException {   //File handler (accesess & reads file)
+    public void file_handler() throws IOException {   //File handler (accesess & reads file)
         
         while(true) {
             
@@ -39,21 +39,35 @@ public class Assembler {
         }  
     }
 
-    public void cleaner() throws IOException {
+    public void cleaner() throws IOException {                   //method for clearing whitespace and comments
 		
         String i, temp = "";
         br = new BufferedReader(new StringReader(instructions));
 
-        
+        while((i = br.readLine()) != null) {                     
+
+            if(i.contains("//"))
+                temp += (i.substring(0, i.indexOf("//")) + "\n");          //removes comments
+            else
+                temp += (i + "\n");  
+
+        } 
+
+        instructions = temp.replaceAll("[\t ]*(.*?)[\t ]*", "");           //removes whitespace, tabs
+        instructions = instructions.replaceAll("(?m)^[ \t]*\r?\n", "");    //removes empty lines
+        instructions = instructions.trim();                                //removes leading & trailing empty lines
+
+        System.out.println("Cleaning....");
+        System.out.println("File after cleaning : \n" + instructions);
 
     }
 
-    public static void main(String args[]) throws FileNotFoundException, IOException {
+    public static void main(String args[]) throws IOException {
         
         Assembler asmb = new Assembler();
 
         asmb.file_handler();
-        
+        asmb.cleaner();
 
     }
     
