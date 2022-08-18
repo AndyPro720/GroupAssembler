@@ -21,17 +21,6 @@ public class Assembler {
             s += (str + "\n");                                         //This string stores all the data of the file
 
         }
-        System.out.println("STRING CHECK : \n" + s);                     /*Output on dry run (also prints the string in whic file data is stored)
-                                                                        code
-                                                                        File : code.asm
-                                                                        ECHO is on.
-                                                                        Sadfh;kvhc
-                                                                        askdfhsa;j
-                                                                        STRING CHECK : 
-                                                                        ECHO is on.
-                                                                        Sadfh;kvhc
-                                                                        askdfhsa;j
-                                                                        */
 
         sc.close();
         br.close();
