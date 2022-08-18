@@ -11,26 +11,26 @@ public class Assembler {
         while(true) {
             
             Scanner sc = new Scanner(System.in);
-            String in = sc.nextLine() + ".asm";
-
-            if(in.exists()) {  
-    
-                System.out.println("File : " + file);   
-                File f = new File(file);                                   //Creates instance of the file taken from input
-
+            String in = sc.nextLine() + ".asm";   
+            File f = new File(in);                                   //Creates instance of the file taken from input
+                
+            if(f.exists()) { 
+                
+                System.out.println("File : " + in);
                 br = new BufferedReader(new FileReader(f));
                 String s;
             
-                while((s = br.readLine()) != null)                         //adds lines read from the file to a string and prints them    
-                    instructions += (s + "\n");                                       //This string stores all the data of the file
+                while((s = br.readLine()) != null)                         //adds lines read from the file to a string
+                    instructions += (s + "\n");                             //This string stores all the data of the file
 
                 System.out.println("File read successfully.");
                 System.out.println("***********************");
 
                 sc.close();
                 br.close();
+                break;
 
-            } else {
+            } else {                                                 //prints error for any faults in file input
                   
                   System.out.println("ERROR : FILE INVALID");
                   System.out.println("***********************");
@@ -39,10 +39,10 @@ public class Assembler {
         }  
     }
 
-    public void cleaner(){
+    public void cleaner() throws IOException {
 		
-        String s = instructions;
-        br = new BufferedReader(new StringReader(s));
+        String i, temp = "";
+        br = new BufferedReader(new StringReader(instructions));
 
         
 
@@ -52,7 +52,8 @@ public class Assembler {
         
         Assembler asmb = new Assembler();
 
-        asmb.fileHandler();
+        asmb.file_handler();
+        
 
     }
     
