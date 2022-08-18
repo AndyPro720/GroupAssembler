@@ -5,7 +5,7 @@ public class Assembler {
 
     public String s = "";
 
-    public void fileHandler() throws FileNotFoundException, IOException {
+    public void fileHandler() throws FileNotFoundException, IOException {   //File handler (accesess & reads file)
         
         Scanner sc = new Scanner(System.in);
         String file = sc.nextLine();    
@@ -15,12 +15,11 @@ public class Assembler {
         BufferedReader br = new BufferedReader(new FileReader(f));
         String str;
             
-        while((str = br.readLine()) != null) {                         //adds lines read from the file to a string and prints them
-                
-            System.out.println(str);       
-            s += (str + "\n");                                         //This string stores all the data of the file
+        while((str = br.readLine()) != null)                         //adds lines read from the file to a string and prints them    
+            s += (str + "\n");                                       //This string stores all the data of the file
 
-        }
+        System.out.println("File read successfully.");
+        System.out.println("***********************");
 
         sc.close();
         br.close();
