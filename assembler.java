@@ -29,13 +29,13 @@ public class Assembler {
             br.close();
             break;
 
-            } catch(FileNotFoundException fnfe) {                                                 //prints error for any faults in file input
+            } catch(FileNotFoundException fnfe) {                                                 
                   
                   System.out.println("ERROR : FILE NOT FOUND");
                   System.out.println("***********************");
 
               } 
-              catch(IOException ioe) {                                                 //prints error for any faults in file input
+              catch(IOException ioe) {                                               
                   
                   ioe.printStackTrace();
 
@@ -68,7 +68,7 @@ public class Assembler {
 
         instructions = temp.replaceAll("[\t ]*(.*?)[\t ]*", "");           //removes whitespace, tabs
         instructions = instructions.replaceAll("(?m)^[ \t]*\r?\n", "");    //removes empty lines
-        instructions = instructions.stripTrailing();                                //removes leading & trailing empty lines
+        instructions = instructions.stripTrailing();                                //removes the newline at the end
 
         System.out.println("Cleaning....");
         System.out.println("File after cleaning : \n" + instructions);
