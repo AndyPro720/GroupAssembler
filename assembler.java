@@ -54,12 +54,11 @@ public class Assembler {
             br = new BufferedReader(new StringReader(instructions));
 
             while((i = br.readLine()) != null) {                     
-
-                if(i.isEmpty())                                           //ignores empty lines between the text
-                    continue;
-                
+  
                 if(i.contains("//"))
                     temp += (i.substring(0, i.indexOf("//")) + "\n");          //removes comments
+                else if(i.isEmpty())                                           //ignores empty lines between the text
+                    continue;
                 else
                     temp += (i + "\n");  
 
