@@ -39,19 +39,27 @@ public class Assembler {
         }  
     }
 
-    public void cleaner() throws IOException {                   //method for clearing whitespace and comments
+    public void cleaner() {                   //method for clearing whitespace and comments
 		
         String i, temp = "";
         br = new BufferedReader(new StringReader(instructions));
 
-        while((i = br.readLine()) != null) {                     
+        try {
+        
+            while((i = br.readLine()) != null) {                     
 
-            if(i.contains("//"))
-                temp += (i.substring(0, i.indexOf("//")) + "\n");          //removes comments
-            else
-                temp += (i + "\n");  
+                if(i.contains("//"))
+                    temp += (i.substring(0, i.indexOf("//")) + "\n");          //removes comments
+                else
+                    temp += (i + "\n");  
 
-        } 
+            } 
+        } catch(IOException ioe) {
+
+             ioe.printStackTrace();
+
+          }
+        
 
         instructions = temp.replaceAll("[\t ]*(.*?)[\t ]*", "");           //removes whitespace, tabs
         instructions = instructions.replaceAll("(?m)^[ \t]*\r?\n", "");    //removes empty lines
