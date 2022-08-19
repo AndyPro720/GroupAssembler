@@ -9,25 +9,27 @@ public class Assembler {
     public void file_handler() {   //File handler (accesess & reads file)
         
         while(true) {
-            try {
             
             Scanner sc = new Scanner(System.in);
             String in = sc.nextLine() + ".asm";   
-            File f = new File(in);                                   //Creates instance of the file taken from input
-            System.out.println("File : " + in);
             
-            br = new BufferedReader(new FileReader(f));
-            String s;
+            try {
             
-            while((s = br.readLine()) != null)                         //adds lines read from the file to a string
-                instructions += (s + "\n");                             //This string stores all the data of the file
+                File f = new File(in);                                   //Creates instance of the file taken from input
+                System.out.println("File : " + in);
+            
+                br = new BufferedReader(new FileReader(f));
+                String s;
+            
+                while((s = br.readLine()) != null)                         //adds lines read from the file to a string
+                    instructions += (s + "\n");                             //This string stores all the data of the file
 
-            System.out.println("File read successfully.");
-            System.out.println("***********************");
+                System.out.println("File read successfully.");
+                System.out.println("***********************");
 
-            sc.close();
-            br.close();
-            break;
+                sc.close();
+                br.close();
+                break;
 
             } catch(FileNotFoundException fnfe) {                                                 
                   
@@ -50,9 +52,12 @@ public class Assembler {
         try {
         
             br = new BufferedReader(new StringReader(instructions));
-            
+
             while((i = br.readLine()) != null) {                     
 
+                if(i.isEmpty())                                           //ignores empty lines between the text
+                    continue;
+                
                 if(i.contains("//"))
                     temp += (i.substring(0, i.indexOf("//")) + "\n");          //removes comments
                 else
@@ -60,16 +65,13 @@ public class Assembler {
 
             } 
         } catch(IOException ioe) {
-
-             ioe.printStackTrace();
-
+              ioe.printStackTrace();
           }
         
-
-        instructions = temp.replaceAll("[\t ]*(.*?)[\t ]*", "");           //removes whitespace, tabs
-        instructions = instructions.replaceAll("(?m)^[ \t]*\r?\n", "");    //removes empty lines
-        instructions = instructions.stripTrailing();                                //removes the newline at the end
-
+        instructions = temp.replaceAll("[\t ]*(.*?)[\t ]*", "");                                    //removes whitespace, tabs
+        instructions = instructions.strip();                                 //strips leading and trailing empty lines
+       
+            
         System.out.println("Cleaning....");
         System.out.println("File after cleaning : \n" + instructions);
 
@@ -83,5 +85,4 @@ public class Assembler {
         asmb.cleaner();
 
     }
-    
 }
