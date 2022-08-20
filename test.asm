@@ -1,12 +1,16 @@
 
+//da;lfjk
+//jad;af
 
-
-
-ECHO is on.
-Sadfh;k.  vhc
-
-askdfhs 	a;j       //hey
- Als;dfjkal;fsk
+  
+@R0
+M=M+1
+@R1
+D=A
+(LOOP)
+@R2
+M=0
+@LOOP
 
 
 

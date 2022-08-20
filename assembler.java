@@ -6,6 +6,36 @@ public class Assembler {
     public String instructions = "";
     BufferedReader br;
 
+    private Map<String, String> symbol = new HashMap<>();
+    
+    Assembler() {
+    
+        symbol.put("R0", "0");
+        symbol.put("R1", "1");
+        symbol.put("R2", "2");
+        symbol.put("R3", "3");
+        symbol.put("R4", "4");
+        symbol.put("R5", "5");
+        symbol.put("R6", "6");
+        symbol.put("R7", "7");
+        symbol.put("R8", "8");
+        symbol.put("R9", "9");
+        symbol.put("R10", "10");
+        symbol.put("R11", "11");
+        symbol.put("R12", "12");
+        symbol.put("R13", "13");
+        symbol.put("R14", "14");
+        symbol.put("R15", "15");
+        symbol.put("SCREEN", "16384");
+        symbol.put("KBD", "24576");
+        symbol.put("SP", "0");
+        symbol.put("LCL", "1");
+        symbol.put("ARG", "2");
+        symbol.put("THIS", "3");
+        symbol.put("THAT", "4");
+
+    }
+
     public void file_handler() {   //File handler (accesess & reads file)
         
         while(true) {
@@ -76,12 +106,49 @@ public class Assembler {
 
     }
 
+    public void firstPass() {                   //removes labels from instructions and adds them to symbol table
+
+        String temp = "";
+       
+        try {
+        
+            br = new BufferedReader(new StringReader(instructions));
+            int lineno = -1;
+            String i = "";
+        
+            while((i = br.readLine()) != null) {
+
+                lineno++;
+
+                if(i.startsWith("(")) {           //label found
+                    
+                    if(i.endsWith(")")) 
+                        symbol.put(i.substring(i.indexOf('(') + 1, i.indexOf(')')), String.valueOf((--lineno)+1));        //add to symbol table
+                    else
+                    System.out.println("ERROR : ')' MISSING");
+
+                    continue;                      //skip line 
+                }
+
+                temp += (i + "\n");
+            
+            }
+        } catch(IOException ioe) {
+              ioe.printStackTrace();
+          }
+
+          temp = temp.stripTrailing();
+          instructions = temp;
+
+    }
+
     public static void main(String args[]) {
         
         Assembler asmb = new Assembler();
 
         asmb.file_handler();
         asmb.cleaner();
+        asmb.firstPass();
 
     }
 }
