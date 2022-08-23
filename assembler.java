@@ -2,8 +2,9 @@ import java.io.*;
 import java.util.Scanner;
 
 public class assembler {
+   
 
-    public static void filehandler() {
+    public static String filehandler() {
         //enter the name of file you want to access
         System.out.println("Enter file name");
         Scanner sc = new Scanner(System.in);
@@ -27,38 +28,26 @@ public class assembler {
             System.out.println("File not found");
             System.out.println(e);
         }
+        return "Done";
     }
 
 
-    public static void Cleaner() {
-
-         //enter the name of file you want to access
-         System.out.println("Enter file name");
-         Scanner sc = new Scanner(System.in);
-         String filename = sc.nextLine();
-
-         //reading the file
-         File filereader1 = new File("./" + filename + ".asm"); 
-         System.out.println("File opened");
+    public static void Cleaner(){ 
 
          //intializing variables
-         String instructions;
-         String a ="";
+         String instructions=filehandler();
+         String temp ="";
         
         //expection handling
         try {
         
-            Scanner sci = new Scanner(filereader1);
+            Scanner sci = new Scanner(instructions);
             
             while(sci.hasNextLine()) {
-                a +=sci.hasNextLine();                     
-                if(a.contains("//")){
-                    a= (a.substring(0, a.indexOf("//")) + "\n");   
-                }      
-                
-                else{
-                    a += (a + "\n"); 
-                } 
+                temp +=sci.nextLine();                     
+                if(temp.contains("//")){
+                    temp+= (temp.substring(0, temp.indexOf("//")) + "\n");   
+                }     
             } 
         
     
@@ -68,8 +57,8 @@ public class assembler {
 
           System.out.println("Clearing....");
         
-          instructions =a.replaceAll("[\t ]*(.?)[\t ]", "");                                  
-          instructions = instructions.trim();                                
+          instructions =temp.replaceAll("[\t ]*(.?)[\t ]", "");                                  
+          instructions = instructions.strip();                                
       
           System.out.println("After clearing :\n " + instructions);   
     }
@@ -79,7 +68,7 @@ public class assembler {
 
     public static void main(String []args) {
         //filehandler method is used
-          // filehandler();
+        // filehandler();
         //cleaning method
            assembler.Cleaner();
         }
