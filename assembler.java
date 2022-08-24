@@ -106,7 +106,7 @@ public class Assembler {
 
     }
 
-    public void firstPass() {                   //removes labels from instructions and adds them to symbol table
+    public void first_pass() {                   //removes labels from instructions and adds them to symbol table
 
         String temp = "";
        
@@ -121,13 +121,10 @@ public class Assembler {
                 lineno++;
 
                 if(i.startsWith("(")) {           //label found
-                    
-                    if(i.endsWith(")")) 
-                        symbol.put(i.substring(i.indexOf('(') + 1, i.indexOf(')')), String.valueOf((--lineno)+1));        //add to symbol table
-                    else
-                    System.out.println("ERROR : ')' MISSING");
 
-                    continue;                      //skip line 
+                        symbol.put(i.substring(i.indexOf('(') + 1, i.indexOf(')')), String.valueOf((--lineno)+1));        //add to symbol table
+                        continue;                //skip line
+    
                 }
 
                 temp += (i + "\n");
@@ -148,7 +145,7 @@ public class Assembler {
 
         asmb.file_handler();
         asmb.cleaner();
-        asmb.firstPass();
+        asmb.first_pass();
 
     }
 }
