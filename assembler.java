@@ -97,8 +97,7 @@ public class Assembler {
               ioe.printStackTrace();
           }
         
-        instructions = temp.replaceAll("[\t ]*(.*?)[\t ]*", "");                                    //removes whitespace, tabs
-        instructions = instructions.strip();                                 //strips leading and trailing empty lines
+        instructions = temp.replaceAll("[\t ]*(.*?)[\t ]*", "").strip();       //removes whitespace, tabs, leading and trailing empty lines
        
             
         System.out.println("Cleaning....");
@@ -134,8 +133,7 @@ public class Assembler {
               ioe.printStackTrace();
           }
 
-          temp = temp.stripTrailing();
-          instructions = temp;
+          instructions = temp.stripTrailing();
 
     }
 
@@ -177,8 +175,7 @@ public class Assembler {
               ioe.printStackTrace();
           }
 
-          temp = temp.stripTrailing();
-          instructions = temp;
+          instructions = temp.stripTrailing();
 
     }
 
