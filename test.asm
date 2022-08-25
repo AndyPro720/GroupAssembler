@@ -11,6 +11,11 @@ D=A
 @R2
 M=0
 @LOOP
+@x
+M=A
+@y
+M=A
+@KBD
 
 
 

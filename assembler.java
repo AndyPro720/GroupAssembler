@@ -106,7 +106,7 @@ public class Assembler {
 
     }
 
-    public void first_pass() {                   //removes labels from instructions and adds them to symbol table
+    public void first_pass_labels() {                   //removes labels from instructions and adds them to symbol table
 
         String temp = "";
        
@@ -139,13 +139,57 @@ public class Assembler {
 
     }
 
+    public void second_pass_var() {                    //replaces variables with corresponding address register value
+
+        int reg = 16;
+        String i, temp = "";
+        
+         try {
+        
+            br = new BufferedReader(new StringReader(instructions));
+
+            while((i = br.readLine()) != null) {
+
+                if(i.startsWith("@")) {                    //check if var found
+                
+                    String name = i.substring(1);
+
+                    if(symbol.containsKey(name)) {        //if var in sybmol table then modify instruction
+
+                        temp += (i.replace(name, symbol.get(name)) + "\n");
+                        continue;
+
+                    }
+                    else {                               //else add to symbol table and modify instruction
+
+                        symbol.put(name, String.valueOf(reg));  
+                        temp += (i.replace(name, String.valueOf(reg++)) + "\n");
+
+                    }
+                }
+                else {
+
+                    temp += (i + "\n");
+
+                }
+            }
+        } catch(IOException ioe) {
+              ioe.printStackTrace();
+          }
+
+          temp = temp.stripTrailing();
+          instructions = temp;
+
+    }
+
     public static void main(String args[]) {
         
         Assembler asmb = new Assembler();
 
         asmb.file_handler();
         asmb.cleaner();
-        asmb.first_pass();
+        asmb.first_pass_labels();
+        asmb.second_pass_var();
 
     }
 }
