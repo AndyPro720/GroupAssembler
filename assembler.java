@@ -96,15 +96,17 @@ public class Assembler<symbol> {
     public  static void first_pass() {                  
 
         String temp = "";
+        int line=0;
 
         Scanner sci = new Scanner(instructions);
             String str = "";
         
             while(sci.hasNextLine()) {
                 str+=sci.nextLine();
+                
 
                 if(str.startsWith("(")) {           
-                String clean = symbol.put(str.substring(str.indexOf('('), str.indexOf(')')));       
+                String clean = symbol.put(str.substring(str.indexOf('('), str.indexOf(')')), String.valueOf((line++)-1));       
                 continue;         
                 }
                 else{
