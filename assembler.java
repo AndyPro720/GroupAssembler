@@ -6,7 +6,7 @@ public class Assembler<symbol> {
 
    public static String instructions;
 
-   Map<String,String> symbol = new HashMap<String,String>();
+   static Map<String,String> symbol = new HashMap<String,String>();
 
    Assembler() {
     
@@ -104,7 +104,7 @@ public class Assembler<symbol> {
                 str+=sci.nextLine();
 
                 if(str.startsWith("(")) {           
-                String clean = str.substring(str.indexOf('('), str.indexOf(')'));       
+                String clean = symbol.put(str.substring(str.indexOf('('), str.indexOf(')')));       
                 continue;         
                 }
                 else{
