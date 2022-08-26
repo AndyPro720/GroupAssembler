@@ -149,10 +149,12 @@ public class Assembler {
             while((i = br.readLine()) != null) {
 
                 if(i.startsWith("@")) {                    //check if var found
-                
+                    
                     String name = i.substring(1);
 
-                    if(symbol.containsKey(name)) {        //if var in sybmol table then modify instruction
+                    if(name.matches("[0-9]+"))           //if addr mentioned instead of name
+                        temp += (i + "\n");
+                    else if(symbol.containsKey(name)) {        //if var in sybmol table then modify instruction
 
                         temp += (i.replace(name, symbol.get(name)) + "\n");
                         continue;

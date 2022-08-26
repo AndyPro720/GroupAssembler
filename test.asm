@@ -13,6 +13,8 @@ M=0
 @LOOP
 @x
 M=A
+@5
+D=M
 @y
 M=A
 @KBD
