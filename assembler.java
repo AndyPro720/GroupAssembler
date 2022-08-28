@@ -6,7 +6,7 @@ public class Assembler {
 
    public static String instructions="";
 
-   public static  Map<String,String> symbol = new HashMap<String,String>();
+   public  Map<String,String> symbol = new HashMap<String,String>();
 
   public Assembler() {
     
@@ -96,7 +96,7 @@ public class Assembler {
           System.out.println("After clearing :\n" + instructions);   
     }
 
-    public  static void first_pass() {                  
+    public  void first_pass_labels() {                  
 
         String temp = "";
         int line=-1;
@@ -110,7 +110,7 @@ public class Assembler {
                 
 
                 if(str.startsWith("(")) {           
-                 symbol.put(str.substring(str.indexOf('('), str.indexOf(')')), String.valueOf((--line)+1));       
+                 symbol.put(str.substring(str.indexOf('(')+1, str.indexOf(')')), String.valueOf((--line)+1));       
                 continue;         
                 }
                
@@ -129,12 +129,13 @@ public class Assembler {
  
 
     public static void main(String []args) {
+        Assembler obj=new Assembler();
         //filehandler method is used
          file_handler();
         //cleaning method
         cleaner();
         //first pass
-        first_pass();
+        obj.first_pass_labels();
         }
       
     
