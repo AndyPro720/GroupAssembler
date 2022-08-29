@@ -125,17 +125,60 @@ public class Assembler {
 
     }
 
+    public void second_pass_var() {                   
+
+        int reg = 16;
+        String str="";
+        String  temp = "";
+        
+         
+        
+            Scanner sci = new Scanner(instructions);
+
+            while(sci.hasNextLine()) {
+                str=sci.nextLine();
+
+                if(str.startsWith("@")) {
+                    String var=str.substring(1); 
+                    if(symbol.containsKey(var))  { 
+                        temp+=(str.replace(var, String.valueOf(reg++))+"\n") ;  
+                        continue;          
+                }
+                else{
+                    symbol.put(var, String.valueOf(reg));
+                    temp+=(str.replace(var, String.valueOf(reg++))+"\n");
+
+                }
+            }
+
+                else {
+
+                    temp += (str + "\n");
+
+                }
+            
+            }
+
+          instructions = temp.stripTrailing();
+          System.out.println(instructions);
+        }
+
+    
+
+
 
  
 
     public static void main(String []args) {
         Assembler obj=new Assembler();
         //filehandler method is used
-         file_handler();
-        //cleaning method
-        cleaner();
-        //first pass
-        obj.first_pass_labels();
+          file_handler();
+        // //cleaning method
+        // cleaner();
+        // //first pass
+         obj.first_pass_labels();
+        //second pass
+        obj.second_pass_var();
         }
       
     
