@@ -141,9 +141,13 @@ public class Assembler {
                 if(str.startsWith("@")) {
                     String var=str.substring(1); 
                     if(symbol.containsKey(var))  { 
-                        temp+=(str.replace(var, String.valueOf(reg++))+"\n") ;  
-                        continue;          
-                }
+                        temp+=(str.replace(var, String.valueOf(reg))+"\n");  
+                        continue; 
+                    }else if(var.matches("0-9")){
+                        temp += (str + "\n");
+
+                    }         
+                
                 else{
                     symbol.put(var, String.valueOf(reg));
                     temp+=(str.replace(var, String.valueOf(reg++))+"\n");
@@ -174,11 +178,11 @@ public class Assembler {
         //filehandler method is used
           file_handler();
         // //cleaning method
-        // cleaner();
+         cleaner();
         // //first pass
          obj.first_pass_labels();
         //second pass
-        obj.second_pass_var();
+       obj.second_pass_var();
         }
       
     
