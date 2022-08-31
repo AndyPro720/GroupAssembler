@@ -1,15 +1,15 @@
 //da;lfjk
 //jad;af
 
-  
-@R0
+ @21 
+@name
 M=M+1
 @R1
 D=A
 
    
 (LOOP)
-@R2
+@hello
 M=0
 @LOOP
 

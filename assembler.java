@@ -7,6 +7,9 @@ public class Assembler {
    public static String instructions="";
 
    public  Map<String,String> symbol = new HashMap<String,String>();
+   public  Map<String,String> dest = new HashMap<String,String>();
+   public  Map<String,String> comp = new HashMap<String,String>();
+   public  Map<String,String> jump = new HashMap<String,String>();
 
   public Assembler() {
     
@@ -33,6 +36,53 @@ public class Assembler {
     symbol.put("ARG", "2");
     symbol.put("THIS", "3");
     symbol.put("THAT", "4");
+
+    dest.put("", "000");
+    dest.put("M", "001");
+    dest.put("D", "010");
+    dest.put("MD", "011");
+    dest.put("A", "100");
+    dest.put("AM", "101");
+    dest.put("AD", "110");
+    dest.put("AMD", "111");
+
+    jump.put("", "000");
+    jump.put("JGT", "001");
+    jump.put("JEQ", "010");
+    jump.put("JGE", "011");
+    jump.put("JLT", "100");
+    jump.put("JNE", "101");
+    jump.put("JLE", "110");
+    jump.put("JMP", "111");
+
+    comp.put("0", "0101010");
+    comp.put("1", "0111111");
+    comp.put("-1", "0111010");
+    comp.put("D", "0001100");
+    comp.put("A", "0110000");
+    comp.put("M", "1110000");
+    comp.put("!D", "0001101");
+    comp.put("!A", "0110001");
+    comp.put("!M", "1110001");
+    comp.put("-D", "0001111");
+    comp.put("-A", "0110011");
+    comp.put("-M", "1110011");
+    comp.put("D+1", "0011111");
+    comp.put("A+1", "0110111");
+    comp.put("M+1", "1110111");
+    comp.put("D-1", "0001110");
+    comp.put("A-1", "0110010");
+    comp.put("M-1", "1110010");
+    comp.put("D+A", "0000010");
+    comp.put("D+M", "1000010");
+    comp.put("D-A", "0010011");
+    comp.put("D-M", "1010011");
+    comp.put("A-D", "0000111");
+    comp.put("M-D", "1000111");
+    comp.put("D&A", "0000000");
+    comp.put("D&M", "1000000");
+    comp.put("D|A", "0010101");
+    comp.put("D|M", "1010101");
 
     }
     
@@ -88,12 +138,12 @@ public class Assembler {
     
        
 
-          System.out.println("Clearing....");
+        //   System.out.println("Clearing....");
         
           instructions =clean.replaceAll("[\t ]*(.*?)[\t ]*","");                                 
           instructions = instructions.strip();                                
       
-          System.out.println("After clearing :\n" + instructions);   
+        //   System.out.println("After clearing :\n" + instructions);   
     }
 
     public  void first_pass_labels() {                  
@@ -119,8 +169,8 @@ public class Assembler {
             }
 
             instructions= temp.strip();
-            System.out.println("\n"+"\n"+instructions);
-            symbol.forEach((key, value) -> System.out.println(key +"|"  + value));
+            // System.out.println("\n"+"\n"+instructions);
+            
            
 
     }
@@ -140,13 +190,16 @@ public class Assembler {
 
                 if(str.startsWith("@")) {
                     String var=str.substring(1); 
-                    if(symbol.containsKey(var))  { 
+                     if(var.matches("[0-9]+")) {
+                        // System.out.println(".");
+                         temp += (str + "\n");
+ 
+                     }         
+                    else if(symbol.containsKey(var))  { 
                         temp+=(str.replace(var, String.valueOf(reg))+"\n");  
-                        continue; 
-                    }else if(var.matches("0-9")){
-                        temp += (str + "\n");
-
-                    }         
+                      
+                    }
+                    
                 
                 else{
                     symbol.put(var, String.valueOf(reg));
@@ -164,7 +217,63 @@ public class Assembler {
             }
 
           instructions = temp.stripTrailing();
-          System.out.println(instructions);
+         // System.out.println(instructions);
+         symbol.forEach((key, value) -> System.out.println(key +"|"  + value));
+        }
+
+        public void translator() {                           
+
+            String temp = "";
+            String str = "";
+            
+                Scanner sc = new Scanner(instructions);
+
+                while(sc.hasNextLine()) {
+
+                    str=sc.nextLine();                                            
+                            
+                        String destination = "";
+                        String jmp = "";
+                        String compute = "";
+    
+                        if(str.contains("=") && str.contains(";")) {              
+                            
+                            destination = str.substring(0, str.indexOf('='));
+                            compute = str.substring(str.indexOf('=') , str.indexOf(';'));
+                            jmp = str.substring(str.indexOf(';') );
+    
+                            temp += ("111" + comp.get(compute) + dest.get(destination) + jump.get(jmp) + "\n");
+                            
+    
+                        }
+                        else if(str.contains("=")) {                             
+    
+                            destination = str.substring(0, str.indexOf('='));
+                            compute = str.substring(str.indexOf('=') );
+    
+                            temp += ("111" + comp.get(compute) + dest.get(destination) + jump.get(jmp) + "\n");
+                          
+    
+                        }
+                        else if (str.contains(";")) {                           
+    
+                            compute = str.substring(0, str.indexOf(';'));
+                            jmp = str.substring(str.indexOf(';'));
+    
+                            temp += ("111" + comp.get(compute) + dest.get(destination) + jump.get(jmp) + "\n");
+                            
+    
+                        }
+                    
+                }
+           
+            
+            instructions = temp.stripTrailing();
+            System.out.println(instructions);
+    
+            
+            
+    
         }
 
     
@@ -183,6 +292,8 @@ public class Assembler {
          obj.first_pass_labels();
         //second pass
        obj.second_pass_var();
+       //translator
+       obj.translator();
         }
       
     
