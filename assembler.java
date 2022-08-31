@@ -218,7 +218,7 @@ public class Assembler {
 
           instructions = temp.stripTrailing();
          // System.out.println(instructions);
-         symbol.forEach((key, value) -> System.out.println(key +"|"  + value));
+        //  symbol.forEach((key, value) -> System.out.println(key +"|"  + value));
         }
 
         public void translator() {                           
@@ -239,8 +239,8 @@ public class Assembler {
                         if(str.contains("=") && str.contains(";")) {              
                             
                             destination = str.substring(0, str.indexOf('='));
-                            compute = str.substring(str.indexOf('=') , str.indexOf(';'));
-                            jmp = str.substring(str.indexOf(';') );
+                            compute = str.substring(str.indexOf('=')+1 , str.indexOf(';'));
+                            jmp = str.substring(str.indexOf(';')+1 );
     
                             temp += ("111" + comp.get(compute) + dest.get(destination) + jump.get(jmp) + "\n");
                             
@@ -249,7 +249,7 @@ public class Assembler {
                         else if(str.contains("=")) {                             
     
                             destination = str.substring(0, str.indexOf('='));
-                            compute = str.substring(str.indexOf('=') );
+                            compute = str.substring(str.indexOf('=')+1 );
     
                             temp += ("111" + comp.get(compute) + dest.get(destination) + jump.get(jmp) + "\n");
                           
@@ -258,11 +258,15 @@ public class Assembler {
                         else if (str.contains(";")) {                           
     
                             compute = str.substring(0, str.indexOf(';'));
-                            jmp = str.substring(str.indexOf(';'));
+                            jmp = str.substring(str.indexOf(';')+1);
     
                             temp += ("111" + comp.get(compute) + dest.get(destination) + jump.get(jmp) + "\n");
                             
     
+                        }
+                        else{
+                            compute = str;                                   
+                            temp += ("111" + comp.get(compute) + "\n");  
                         }
                     
                 }
