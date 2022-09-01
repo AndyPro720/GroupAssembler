@@ -98,6 +98,10 @@ public class Assembler {
         File filereader = new File("./" + filename + ".asm"); 
         System.out.println("File opened");
         //exception handling
+        boolean access=true;
+
+        if(access){
+    
         try {
             Scanner scn = new Scanner(filereader);//var
             while (scn.hasNextLine()) {
@@ -108,8 +112,18 @@ public class Assembler {
            sc.close();
         } 
         catch (Exception e) {
+            System.out.println(e);
             
         }
+    }else{
+        try {
+            PrintWriter w = new PrintWriter("./output.hack");       
+            w.println(instructions);
+            w.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
         
     }
 
@@ -235,6 +249,10 @@ public class Assembler {
                         String destination = "";
                         String jmp = "";
                         String compute = "";
+                        if(str.startsWith("@")) {                             
+                        temp += (String.format("%016d",(Long.valueOf(str.substring(1)))) + "\n");
+                        }
+                        else{
     
                         if(str.contains("=") && str.contains(";")) {              
                             
@@ -268,6 +286,7 @@ public class Assembler {
                             compute = str;                                   
                             temp += ("111" + comp.get(compute) + "\n");  
                         }
+                    }
                     
                 }
            
