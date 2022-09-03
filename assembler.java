@@ -235,7 +235,7 @@ public class Assembler {
         //  symbol.forEach((key, value) -> System.out.println(key +"|"  + value));
         }
 
-        public void translator() {                           
+        public boolean translator() {                           
 
             String temp = "";
             String str = "";
@@ -250,7 +250,7 @@ public class Assembler {
                         String jmp = "";
                         String compute = "";
                         if(str.startsWith("@")) {                             
-                        temp += (String.format("%016d",(Long.valueOf(str.substring(1)))) + "\n");
+                            temp += (String.format("%016d", Long.valueOf((Long.toBinaryString(Long.valueOf(str.substring(1)))))) + "\n");
                         }
                         else{
     
@@ -292,7 +292,9 @@ public class Assembler {
            
             
             instructions = temp.stripTrailing();
-            System.out.println(instructions);
+            //System.out.println(instructions);
+
+            return false;
     
             
             
