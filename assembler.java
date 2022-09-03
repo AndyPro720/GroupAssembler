@@ -5,6 +5,7 @@ import java.util.*;
 public class Assembler {
 
    public static String instructions="";
+   public static boolean access=true;
 
    public  Map<String,String> symbol = new HashMap<String,String>();
    public  Map<String,String> dest = new HashMap<String,String>();
@@ -89,46 +90,50 @@ public class Assembler {
    
 
 
-    public static void file_handler() {
-        //enter the name of file you want to access
-        System.out.println("Enter file name");
-        Scanner sc = new Scanner(System.in);
-        String filename = sc.nextLine();
-        //reading the file
-        File filereader = new File("./" + filename + ".asm"); 
-        System.out.println("File opened");
-        //exception handling
-        boolean access=true;
-
+    public  void file_handler() {//file handler method -opens the file andd reads it
+      
         if(access){
+            while(true){
     
         try {
+            System.out.println("Enter file name");
+            Scanner sc = new Scanner(System.in);
+            String filename = sc.nextLine();
+            //reading the file
+            File filereader = new File("./" + filename + ".asm"); 
+            System.out.println("File opened");
+
             Scanner scn = new Scanner(filereader);//var
             while (scn.hasNextLine()) {
                 String line=scn.nextLine();
                 instructions = instructions+line+'\n';
             }
+
             //file is stored in content
            sc.close();
+           break;
         } 
         catch (Exception e) {
             System.out.println(e);
             
         }
-    }else{
-        try {
+    }
+}
+      else{
+        try { // writes machine code -> '.hack' 
             PrintWriter w = new PrintWriter("./output.hack");       
             w.println(instructions);
             w.close();
         } catch (Exception e) {
             System.out.println(e);
-        }
+        }System.out.println("Assembled succesfully and hack file generated");
     }
         
     }
 
 
-    public static void cleaner(){ 
+
+    public  void cleaner(){ //cleaner method-cleans the readed file
 
          //intializing variables
          String temp ="";
@@ -138,10 +143,10 @@ public class Assembler {
             
             while(sci.hasNextLine()) {
                 temp =sci.nextLine();                     
-                if(temp.contains("//")){
+                if(temp.contains("//")){//removes comment
                     clean+= (temp.substring(0, temp.indexOf("//")) + "\n");   
                 }  
-                else if(temp.isBlank()){
+                else if(temp.isBlank()){//removes blank line
                     continue;
                 }
                 else{
@@ -154,13 +159,13 @@ public class Assembler {
 
         //   System.out.println("Clearing....");
         
-          instructions =clean.replaceAll("[\t ]*(.*?)[\t ]*","");                                 
+          instructions =clean.replaceAll("[\t ]*(.*?)[\t ]*","");    //removes whitespace, tabs and empty lines                              
           instructions = instructions.strip();                                
       
         //   System.out.println("After clearing :\n" + instructions);   
     }
 
-    public  void first_pass_labels() {                  
+    public  void first_pass_labels() {  //first pass lablel-removes label from file                
 
         String temp = "";
         int line=-1;
@@ -174,7 +179,7 @@ public class Assembler {
                 
 
                 if(str.startsWith("(")) {           
-                 symbol.put(str.substring(str.indexOf('(')+1, str.indexOf(')')), String.valueOf((--line)+1));       
+                 symbol.put(str.substring(str.indexOf('(')+1, str.indexOf(')')), String.valueOf((--line)+1));     //add to symbol table    
                 continue;         
                 }
                
@@ -189,7 +194,7 @@ public class Assembler {
 
     }
 
-    public void second_pass_var() {                   
+    public void second_pass_var() {   //second pass-removes variable with the ragister no                
 
         int reg = 16;
         String str="";
@@ -204,13 +209,13 @@ public class Assembler {
 
                 if(str.startsWith("@")) {
                     String var=str.substring(1); 
-                     if(var.matches("[0-9]+")) {
+                     if(var.matches("[0-9]+")) {//if addr found insted of var
                         // System.out.println(".");
                          temp += (str + "\n");
  
                      }         
-                    else if(symbol.containsKey(var))  { 
-                        temp+=(str.replace(var, String.valueOf(reg))+"\n");  
+                    else if(symbol.containsKey(var))  { //if var is present  sybmol table then modify instruction
+                        temp+=(str.replace(var, symbol.get(var))+"\n");  
                       
                     }
                     
@@ -235,10 +240,12 @@ public class Assembler {
         //  symbol.forEach((key, value) -> System.out.println(key +"|"  + value));
         }
 
-        public boolean translator() {                           
+        public boolean translator() {    //converts assembly to machine language                    
 
             String temp = "";
             String str = "";
+           
+
             
                 Scanner sc = new Scanner(instructions);
 
@@ -249,12 +256,12 @@ public class Assembler {
                         String destination = "";
                         String jmp = "";
                         String compute = "";
-                        if(str.startsWith("@")) {                             
+                        if(str.startsWith("@")) {   //A instruction                           
                             temp += (String.format("%016d", Long.valueOf((Long.toBinaryString(Long.valueOf(str.substring(1)))))) + "\n");
                         }
-                        else{
+                        else{//C instruction  
     
-                        if(str.contains("=") && str.contains(";")) {              
+                        if(str.contains("=") && str.contains(";")) {      //dest=comp;jump     
                             
                             destination = str.substring(0, str.indexOf('='));
                             compute = str.substring(str.indexOf('=')+1 , str.indexOf(';'));
@@ -264,7 +271,7 @@ public class Assembler {
                             
     
                         }
-                        else if(str.contains("=")) {                             
+                        else if(str.contains("=")) {    //dest=comp                         
     
                             destination = str.substring(0, str.indexOf('='));
                             compute = str.substring(str.indexOf('=')+1 );
@@ -273,7 +280,7 @@ public class Assembler {
                           
     
                         }
-                        else if (str.contains(";")) {                           
+                        else if (str.contains(";")) {   //comp;jump                        
     
                             compute = str.substring(0, str.indexOf(';'));
                             jmp = str.substring(str.indexOf(';')+1);
@@ -282,7 +289,7 @@ public class Assembler {
                             
     
                         }
-                        else{
+                        else{// comp
                             compute = str;                                   
                             temp += ("111" + comp.get(compute) + "\n");  
                         }
@@ -310,15 +317,20 @@ public class Assembler {
     public static void main(String []args) {
         Assembler obj=new Assembler();
         //filehandler method is used
-          file_handler();
+        obj.file_handler();
         // //cleaning method
-         cleaner();
+         obj.cleaner();
         // //first pass
          obj.first_pass_labels();
         //second pass
        obj.second_pass_var();
        //translator
-       obj.translator();
+    
+       access=obj.translator();
+
+       //file_handler
+       obj.file_handler();
+       
         }
       
     
