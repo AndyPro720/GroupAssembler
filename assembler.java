@@ -14,6 +14,8 @@ public class Assembler {
 
     boolean access = true;
 
+    String in = "";
+
     Assembler() {
     
         symbol.put("R0", "0");
@@ -91,17 +93,18 @@ public class Assembler {
 
     public void file_handler() {                         //File handler (for creating, accessing, reading & writing files)
 
+
         if(access) {                                    //For input of assembly file
         
             while(true) {
             
                 System.out.print("Enter name of the assembly file : ");
                 Scanner sc = new Scanner(System.in);
-                String in = sc.nextLine() + ".asm";   
+                in = sc.nextLine();   
             
                 try {
             
-                    File f = new File(in);                                   //Creates instance of the file taken from input
+                    File f = new File(in + ".asm");                                   //Creates instance of the file taken from input
             
                     br = new BufferedReader(new FileReader(f));
                     String s;
@@ -131,7 +134,7 @@ public class Assembler {
 
             try {
             
-                PrintWriter w = new PrintWriter("out.hack");       //For writing machine code into '.hack' file
+                PrintWriter w = new PrintWriter(in + ".hack");       //For writing machine code into '.hack' file
                 w.println(instructions);
                 w.close();
             
@@ -270,48 +273,29 @@ public class Assembler {
                 if(i.startsWith("@"))                                //A instruction translation
                     temp += (String.format("%016d", Long.valueOf((Long.toBinaryString(Long.valueOf(i.substring(1)))))) + "\n");
                 else {                                               //C instruction translation
-                        
+                
+                    int j,d;                            //flag variables for determining status of dest and jump in statement
+
                     String destination = "";
                     String jmp = "";
-                    String compute = "";
+                
+                    if((d = i.indexOf("=")) != -1)           //if dest is present
+                        destination = i.substring(0, d);
 
-                    if(i.contains("=") && i.contains(";")) {              //dest=comp;jump
-                        
-                        destination = i.substring(0, i.indexOf('='));
-                        compute = i.substring(i.indexOf('=') + 1, i.indexOf(';'));
-                        jmp = i.substring(i.indexOf(';') + 1);
+                    if((j = i.indexOf(";")) != -1)           //if jump is present
+                        jmp = i.substring(j+1);
+                    else
+                        j = i.length();
+                
+                    String compute = i.substring(d + 1, j);
 
-                        temp += ("111" + comp.get(compute) + dest.get(destination) + jump.get(jmp) + "\n");
-                        continue;
-
-                    }
-                    if(i.contains("=")) {                              //dest=comp
-
-                        destination = i.substring(0, i.indexOf('='));
-                        compute = i.substring(i.indexOf('=') + 1);
-
-                        temp += ("111" + comp.get(compute) + dest.get(destination) + jump.get(jmp) + "\n");
-                        continue;
-
-                    }
-                    if(i.contains(";")) {                            //comp;jump
-
-                        compute = i.substring(0, i.indexOf(';'));
-                        jmp = i.substring(i.indexOf(';') + 1);
-
-                        temp += ("111" + comp.get(compute) + dest.get(destination) + jump.get(jmp) + "\n");
-                        continue;
-
-                    }
-                    
-                    compute = i;                                    //only comp
-                    temp += ("111" + comp.get(compute) + "\n");  
+                    temp += ("111" + comp.get(compute) + dest.get(destination) + jump.get(jmp) + "\n");
 
                 }
-            }
-        } catch(IOException ioe) {
-              ioe.printStackTrace();
-          }
+            } 
+        }catch(IOException ioe) {
+             ioe.printStackTrace();
+         }
         
         instructions = temp.stripTrailing();
 
