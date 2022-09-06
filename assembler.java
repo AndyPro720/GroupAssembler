@@ -90,7 +90,7 @@ public class Assembler {
    
 
 
-    public  void file_handler() {//file handler method -opens the file andd reads it
+    public  void file_handler() {//file handler method -opens the file and reads the file and write it
       
         if(access){
             while(true){
@@ -133,7 +133,7 @@ public class Assembler {
 
 
 
-    public  void cleaner(){ //cleaner method-cleans the readed file
+    public  void cleaner(){          //cleaner method-cleans the readed file
 
          //intializing variables
          String temp ="";
@@ -143,10 +143,10 @@ public class Assembler {
             
             while(sci.hasNextLine()) {
                 temp =sci.nextLine();                     
-                if(temp.contains("//")){//removes comment
+                if(temp.contains("//")){      //removes comment
                     clean+= (temp.substring(0, temp.indexOf("//")) + "\n");   
                 }  
-                else if(temp.isBlank()){//removes blank line
+                else if(temp.isBlank()){         //removes blank line
                     continue;
                 }
                 else{
@@ -154,18 +154,14 @@ public class Assembler {
                 }   
             } 
         
-    
-       
-
-        //   System.out.println("Clearing....");
         
           instructions =clean.replaceAll("[\t ]*(.*?)[\t ]*","");    //removes whitespace, tabs and empty lines                              
           instructions = instructions.strip();                                
       
-        //   System.out.println("After clearing :\n" + instructions);   
+         
     }
 
-    public  void first_pass_labels() {  //first pass lablel-removes label from file                
+    public  void first_pass_labels() {         //first pass lablel-removes label from file                
 
         String temp = "";
         int line=-1;
@@ -188,13 +184,10 @@ public class Assembler {
             }
 
             instructions= temp.strip();
-            // System.out.println("\n"+"\n"+instructions);
-            
            
-
     }
 
-    public void second_pass_var() {   //second pass-removes variable with the ragister no                
+    public void second_pass_var() {        //second pass-removes variable and replaces with the register no                
 
         int reg = 16;
         String str="";
@@ -209,12 +202,12 @@ public class Assembler {
 
                 if(str.startsWith("@")) {
                     String var=str.substring(1); 
-                     if(var.matches("[0-9]+")) {//if addr found insted of var
+                     if(var.matches("[0-9]+")) {            //if addr found insted of var
                         // System.out.println(".");
                          temp += (str + "\n");
  
                      }         
-                    else if(symbol.containsKey(var))  { //if var is present  sybmol table then modify instruction
+                    else if(symbol.containsKey(var))  {          //if var is present  sybmol table then modify instruction
                         temp+=(str.replace(var, symbol.get(var))+"\n");  
                       
                     }
@@ -236,11 +229,10 @@ public class Assembler {
             }
 
           instructions = temp.stripTrailing();
-         // System.out.println(instructions);
-        //  symbol.forEach((key, value) -> System.out.println(key +"|"  + value));
+        
         }
 
-        public boolean translator() {    //converts assembly to machine language                    
+        public boolean translator() {         //converts assembly to machine language                    
 
             String temp = "";
             String str = "";
@@ -259,7 +251,7 @@ public class Assembler {
                         if(str.startsWith("@")) {   //A instruction                           
                             temp += (String.format("%016d", Long.valueOf((Long.toBinaryString(Long.valueOf(str.substring(1)))))) + "\n");
                         }
-                        else{//C instruction  
+                        else{          //C instruction  
     
                         if(str.contains("=") && str.contains(";")) {      //dest=comp;jump     
                             
@@ -289,7 +281,7 @@ public class Assembler {
                             
     
                         }
-                        else{// comp
+                        else{              // implements comp 
                             compute = str;                                   
                             temp += ("111" + comp.get(compute) + "\n");  
                         }
@@ -299,13 +291,7 @@ public class Assembler {
            
             
             instructions = temp.stripTrailing();
-            //System.out.println(instructions);
-
-            return false;
-    
-            
-            
-    
+            return false; 
         }
 
     
@@ -319,7 +305,7 @@ public class Assembler {
         //filehandler method is used
         obj.file_handler();
         // //cleaning method
-         obj.cleaner();
+        obj.cleaner();
         // //first pass
          obj.first_pass_labels();
         //second pass
