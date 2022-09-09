@@ -28,15 +28,13 @@ class assemble {
                         i_file_handle.seekg(std::ios::beg);
                         i_file_handle.read(&instructions[0], instructions.size()); //read the file and store it
 
-                        std::cout << "File Read Successfully. \n"; 
-                        std::cout << "************************ \n"; 
+                        std::cout << "File Read Successfully. \n" << "********************** \n" ; 
                         i_file_handle.close(); 
                         return 0;
                         }
 
                      else {
-                         std::cout << "Couldn't find the named file.\n";
-                         std::cout << "************************ \n"; 
+                         std::cout << "Couldn't find the named file.\n" << "********************** \n" ;
                         }
                 }
          }
@@ -68,6 +66,7 @@ class assemble {
 
       instructions.erase(instructions.end()-1);  //trims the last newline
 
+      std::cout << "Instructions Cleaned \n" << "********************** \n";
    }
 }; 
 
