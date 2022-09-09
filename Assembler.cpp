@@ -1,5 +1,7 @@
 #include<iostream> 
 #include<fstream> 
+#include<sstream>
+#include<algorithm>
 
 class assemble {
    public:
@@ -45,12 +47,26 @@ class assemble {
          return 0;
       }
    }   
-   void clr_space() {      //method to clear whitespace and comments from code
-      std::string clean;
+   void cleaner() {      //method to clear whitespace and comments from code
 
-      while(std::getline(, clean)) {
+      instructions.erase(std::remove_if(instructions.begin(), instructions.end(), ::isblank), instructions.end());   //clears all whitespace
 
-      } 
+      std::istringstream stream(instructions);
+      std::string line;
+      instructions.clear();
+
+      while(std::getline(stream, line)) {   //cleans comments
+         
+         if (line.find("//") != std::string::npos) {
+            if(line.find("//") == 0) continue;
+            instructions += line.substr(0, line.find("//")) + '\n'; 
+         }
+         else {
+             instructions += line + '\n';
+         }
+      }
+
+      instructions.erase(instructions.end()-1);  //trims the last newline
 
    }
 }; 
@@ -64,6 +80,6 @@ int main()
        assemble code;
        
        code.file_handler();
-       std::cout << instructions;
+       code.cleaner();
        return 0;
     }
