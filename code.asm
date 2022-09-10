@@ -1,12 +1,12 @@
 //some comment a
-line 3
+M=D+A;JMP
  (first_label)
 line 5 //next comment
-line 6
+D=M
 (lablel)
 @name
 @21
-(f d
+M+1
 @lablel
 @label
 @21

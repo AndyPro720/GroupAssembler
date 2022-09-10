@@ -135,14 +135,23 @@ class assemble {
                binary = (n%2==0 ?"0":"1") + binary; 
                n/=2; 
             }
-               std::string padding(16-binary.length(), '0');   //adds padding to binary
-               binary = padding + binary;
-            
+            std::string padding(16-binary.length(), '0');   //adds padding to binary
+            binary = padding + binary;
             instructions += binary + '\n';
          } 
-      }
+         else {   //comp+dest+jmp
 
-      std::cout << instructions; 
+            if(line.find('=') != std::string::npos) {
+                std::cout << symbol[line.substr(0, line.find('='))]; 
+                std::cout << instructions;
+            }
+            if(line.find(';') != std::string::npos) instructions += symbol[line.substr(line.find(';'), line.length())]; 
+            
+         }
+
+      }
+      std::cout << instructions;
+
    }
 
 }; 
