@@ -3,6 +3,7 @@
 #include<sstream>
 #include<algorithm>
 #include<unordered_map>
+#include <ctype.h>
 
 class assemble {
    
@@ -72,20 +73,20 @@ class assemble {
       std::cout << "Instructions Cleaned \n" << "********************** \n";
    }
    
-   void first_pass_labels() {
-
+   void first_pass_labels() {     //parses through instructions and stores labels and their values
+ 
       std::istringstream stream(instructions);
       std::string line;
       int count = 0;  
       instructions.clear();
       
-      while(std::getline(stream, line)) {    //parses through instructions and stores labels and their values
+      while(std::getline(stream, line)) {        
 
-         if(line.find('(') != std::string::npos) {
+         if(line.find('(') != std::string::npos) {   //stores labels
             symbol[line.substr(1, line.find(')')-1)] = std::to_string(count);
          }
 
-         else {
+         else {    //regular instructions
             instructions += line + '\n';
             count++;
          }
@@ -93,7 +94,30 @@ class assemble {
       instructions.erase(instructions.end()-1);  //trims the last newline
       std::cout << "First Pass Completed \n" << "********************** \n";
    }
+   
+   void second_pass_var() {   //stores and replaces variables. Replaces label mentions
+      
+      std::istringstream stream(instructions);
+      std::string line;
+      int reg = 15;
+      instructions.clear();
+      
+      while(std::getline(stream, line)) {
+         if(line[0] == '@' && !std::isdigit(line[1])) {    //if A instruction and non register declaration
+
+            symbol.insert(std::pair<std::string, std::string>(line.substr(1, line.size()), std::to_string(++reg)));     //inserts variable and value, ignores duplicates
+            line.replace(1, line.size(), symbol[line.substr(1, line.size())]);   //replaces label/variables with numerical value
+            instructions += line + '\n';
+         }  
+
+         else instructions += line + '\n';
+      }
+
+      std::cout << "Second Pass Completed, variables stored \n" << "********************** \n";
+   }
+
 }; 
+
 
 
 
@@ -106,6 +130,7 @@ int main()
        code.file_handler();
        code.cleaner();
        code.first_pass_labels();
+       code.second_pass_var();
        return 0;
     }
 
