@@ -62,7 +62,9 @@ class assemble {
 
       while(std::getline(stream, line)) {   //cleans comments
          
-         if (line.find("//") != std::string::npos) {
+         if (!line.length()) continue;
+
+         else if (line.find("//") != std::string::npos) {
             if(line.find("//") == 0) continue;
             instructions += line.substr(0, line.find("//")) + '\n'; 
          }
@@ -74,6 +76,7 @@ class assemble {
       instructions.erase(instructions.end()-1);  //trims the last newline
 
       std::cout << "Instructions Cleaned \n" << "********************** \n";
+      std::cout << instructions <<'\n';
    }
    
    void first_pass_labels() {     //parses through instructions and stores labels and their values
@@ -118,6 +121,7 @@ class assemble {
 
       instructions.erase(instructions.end()-1);  //trims the last newline
       std::cout << "Second Pass Completed, variables stored \n" << "********************** \n";
+      //std::cout << instructions << '   ';
    }
 
    void translator() {     //translates Assembly instructions to 16 bit binary
@@ -140,17 +144,23 @@ class assemble {
             instructions += binary + '\n';
          } 
          else {   //comp+dest+jmp
+            std::string d = "";
+            std::string c = "";
+            std::string j = "";
+            int a = 0;
+            int b = line.find(';');
 
-            if(line.find('=') != std::string::npos) {
-                instructions += dest[line.substr(0, line.find('='))]; 
-                std::cout << instructions << std::endl;
-            }
-            if(line.find(';') != std::string::npos) instructions += symbol[line.substr(line.find(';'), line.length())]; 
+            if(line.find('=') != std::string::npos)  d = line.substr(0, line.find('=')); a = line.find('=')+1;
+            if(line.find(';') != std::string::npos) j = line.substr(line.find(';')+1, line.length()); b = line.find(';'); 
+            c = line.substr(a, b);
             
+            std::cout << c <<std::endl;
+            //instructions += "111" + comp[c] + dest[d] + jmp[j] + '\n';
+            //std::cout << comp[c] + dest[d] + jmp[j] + '\n';
          }
 
       }
-      std::cout << instructions;
+      //std::cout << instructions;
 
    }
 
