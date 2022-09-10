@@ -12,14 +12,14 @@ class assemble {
    std::unordered_map <std::string, std::string> dest;
    std::unordered_map <std::string, std::string> comp;
    std::unordered_map <std::string, std::string> jmp;
-   
+   std::string file_name;
+
    public:
    assemble();
    bool io_state = false;
 
    int file_handler() {     //method for file I/O management
 
-      std::string file_name;
       if (io_state == 0) {  //Input file handler
             std::fstream i_file_handle;
              while (true)   //open file    
@@ -46,8 +46,11 @@ class assemble {
          }
       else {  //Output file handler
          std::fstream o_file_handle;
-         o_file_handle.open(file_name+".hack", std::ofstream::out | std::ofstream::trunc);
-         std::cout << "Created the output file, processing assembly";
+         o_file_handle.open(file_name + ".hack", std::ofstream::out | std::ofstream::trunc);
+         
+         o_file_handle << instructions; 
+         o_file_handle.close();
+         std::cout << "File Assembled with same name successfully \n" << "********************** \n" ;
          return 0;
       }
    }   
@@ -164,6 +167,7 @@ class assemble {
 
       instructions.erase(instructions.end()-1);  //trims the last newline
       std::cout << "Translation compeleted \n" << "********************** \n";
+      io_state = true;
       //std::cout << instructions;
 
    }
@@ -176,7 +180,6 @@ class assemble {
 
 int main()
     {
-
        assemble code;
        
        code.file_handler();
@@ -184,6 +187,8 @@ int main()
        code.first_pass_labels();
        code.second_pass_var();
        code.translator();
+       code.file_handler();
+
        return 0;
     }
 
