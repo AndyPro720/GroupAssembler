@@ -2,14 +2,16 @@
 #include<fstream> 
 #include<sstream>
 #include<algorithm>
+#include<unordered_map>
 
 class assemble {
-   public:
- 
+   
    std::string instructions; 
-   bool io_state = false;
+   std::unordered_map <std::string, std::string> symbol;
    
    public:
+   assemble();
+   bool io_state = false;
 
    int file_handler() {     //method for file I/O management
 
@@ -45,6 +47,7 @@ class assemble {
          return 0;
       }
    }   
+
    void cleaner() {      //method to clear whitespace and comments from code
 
       instructions.erase(std::remove_if(instructions.begin(), instructions.end(), ::isblank), instructions.end());   //clears all whitespace
@@ -68,6 +71,10 @@ class assemble {
 
       std::cout << "Instructions Cleaned \n" << "********************** \n";
    }
+   
+   void first_pass_lablels() {
+      //code
+   }
 }; 
 
 
@@ -82,3 +89,32 @@ int main()
        code.cleaner();
        return 0;
     }
+
+
+assemble::assemble() {
+   symbol  = {
+      {"R0", "0"},
+      {"R1", "1"},
+      {"R2", "2"},
+      {"R3", "3"},
+      {"R4", "4"},
+      {"R5", "5"},
+      {"R6", "6"},
+      {"R7", "7"},
+      {"R8", "8"},
+      {"R9", "9"},
+      {"R10", "10"},
+      {"R11", "11"},
+      {"R12", "12"},
+      {"R13", "13"},
+      {"R14", "14"},
+      {"R15", "15"},
+      {"SCREEN", "16384"},
+      {"KBD", "24576"},
+      {"SP", "0"},
+      {"LCL", "1"},
+      {"ARG", "2"},
+      {"THIS", "3"},
+      {"THAT", "4"}, 
+   };
+}
