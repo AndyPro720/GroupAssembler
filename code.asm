@@ -1,12 +1,12 @@
 //some comment a
 line 3
-//line comment
+ (first_label)
 line 5 //next comment
 line 6
- //
+(lablel)
 @name
 @21
-f d
+(f d
 @tr
 @label
 @21

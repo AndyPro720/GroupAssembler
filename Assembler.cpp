@@ -72,8 +72,26 @@ class assemble {
       std::cout << "Instructions Cleaned \n" << "********************** \n";
    }
    
-   void first_pass_lablels() {
-      //code
+   void first_pass_labels() {
+
+      std::istringstream stream(instructions);
+      std::string line;
+      int count = 0;  
+      instructions.clear();
+      
+      while(std::getline(stream, line)) {    //parses through instructions and stores labels and their values
+
+         if(line.find('(') != std::string::npos) {
+            symbol[line.substr(1, line.find(')')-1)] = std::to_string(count);
+         }
+
+         else {
+            instructions += line + '\n';
+            count++;
+         }
+      }
+      instructions.erase(instructions.end()-1);  //trims the last newline
+      std::cout << "First Pass Completed \n" << "********************** \n";
    }
 }; 
 
@@ -87,11 +105,12 @@ int main()
        
        code.file_handler();
        code.cleaner();
+       code.first_pass_labels();
        return 0;
     }
 
 
-assemble::assemble() {
+assemble::assemble() {  //constructor for storing maps
    symbol  = {
       {"R0", "0"},
       {"R1", "1"},
