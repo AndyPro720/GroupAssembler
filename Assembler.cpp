@@ -143,7 +143,8 @@ class assemble {
 
             if(line.find('=') != std::string::npos) {
                 std::cout << symbol[line.substr(0, line.find('='))]; 
-                std::cout << instructions;
+                std::cout << symbol["M"]; 
+                //std::cout << instructions;
             }
             if(line.find(';') != std::string::npos) instructions += symbol[line.substr(line.find(';'), line.length())]; 
             
