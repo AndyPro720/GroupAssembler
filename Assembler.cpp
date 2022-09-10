@@ -76,7 +76,6 @@ class assemble {
       instructions.erase(instructions.end()-1);  //trims the last newline
 
       std::cout << "Instructions Cleaned \n" << "********************** \n";
-      std::cout << instructions <<'\n';
    }
    
    void first_pass_labels() {     //parses through instructions and stores labels and their values
@@ -105,13 +104,16 @@ class assemble {
       
       std::istringstream stream(instructions);
       std::string line;
-      int reg = 15;
+      int reg = 16;
       instructions.clear();
       
       while(std::getline(stream, line)) {
          if(line[0] == '@' && !std::isdigit(line[1])) {    //if A instruction and non register declaration
 
-            symbol.insert(std::pair<std::string, std::string>(line.substr(1, line.size()), std::to_string(++reg)));     //inserts variable and value, ignores duplicates
+            //inserts variable and value, ignores duplicates
+            auto [a, b] = symbol.insert(std::pair<std::string, std::string>(line.substr(1, line.size()), std::to_string(reg)));     
+            if(b) reg++;
+
             line.replace(1, line.size(), symbol[line.substr(1, line.size())]);   //replaces label/variables with numerical value
             instructions += line + '\n';
          }  
@@ -119,9 +121,8 @@ class assemble {
          else instructions += line + '\n';
       }
 
-      instructions.erase(instructions.end()-1);  //trims the last newline
+      //instructions.erase(instructions.end()-1);  //trims the last newline
       std::cout << "Second Pass Completed, variables stored \n" << "********************** \n";
-      //std::cout << instructions << '   ';
    }
 
    void translator() {     //translates Assembly instructions to 16 bit binary
@@ -143,23 +144,26 @@ class assemble {
             binary = padding + binary;
             instructions += binary + '\n';
          } 
-         else {   //comp+dest+jmp
+         else {   //dest=comp+jmp  if C instruction
             std::string d = "";
             std::string c = "";
             std::string j = "";
             int a = 0;
-            int b = line.find(';');
+            int b = line.length();
+            std::cout << b << std::endl;
 
             if(line.find('=') != std::string::npos)  d = line.substr(0, line.find('=')); a = line.find('=')+1;
             if(line.find(';') != std::string::npos) j = line.substr(line.find(';')+1, line.length()); b = line.find(';'); 
             c = line.substr(a, b);
             
-            std::cout << c <<std::endl;
-            //instructions += "111" + comp[c] + dest[d] + jmp[j] + '\n';
-            //std::cout << comp[c] + dest[d] + jmp[j] + '\n';
+            instructions += "111" + comp[c] + dest[d] + jmp[j] + '\n';
+            std::cout <<j + ' ' << jmp[j] << std::endl;
          }
 
       }
+
+      instructions.erase(instructions.end()-1);  //trims the last newline
+      std::cout << "Translation compeleted \n" << "********************** \n";
       //std::cout << instructions;
 
    }
