@@ -120,6 +120,31 @@ class assemble {
       std::cout << "Second Pass Completed, variables stored \n" << "********************** \n";
    }
 
+   void translator() {     //translates Assembly instructions to 16 bit binary
+      std::istringstream stream(instructions);
+      std::string line;
+      instructions.clear();
+      
+      while(getline(stream, line)) {
+
+         if(line[0] == '@') {    //if A instruction
+            int n = std::stoi(line.substr(1, line.length()));
+            std::string binary; 
+
+            while(n!=0) {     //convert n to binary
+               binary = (n%2==0 ?"0":"1") + binary; 
+               n/=2; 
+            }
+               std::string padding(16-binary.length(), '0');   //adds padding to binary
+               binary = padding + binary;
+            
+            instructions += binary + '\n';
+         } 
+      }
+
+      std::cout << instructions; 
+   }
+
 }; 
 
 
@@ -135,6 +160,7 @@ int main()
        code.cleaner();
        code.first_pass_labels();
        code.second_pass_var();
+       code.translator();
        return 0;
     }
 
