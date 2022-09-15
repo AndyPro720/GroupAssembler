@@ -8,6 +8,7 @@
 class assemble {
    
    std::string instructions; 
+   std::string log_file;
    std::unordered_map <std::string, std::string> symbol;
    std::unordered_map <std::string, std::string> dest;
    std::unordered_map <std::string, std::string> comp;
@@ -46,11 +47,15 @@ class assemble {
          }
       else {  //Output file handler
          std::fstream o_file_handle;
+         std::ofstream log(file_name + "_log_file.txt", std::ostream::out | std::ostream::binary | std::ofstream::binary);
          o_file_handle.open(file_name + ".hack", std::ofstream::out | std::ostream::binary | std::ofstream::trunc);
          
          o_file_handle << instructions; 
+         log << log_file;
+
          o_file_handle.close();
-         std::cout << "File Assembled with same name successfully \n" << "********************** \n" ;
+         log.close();
+         std::cout << "File and log_file Assembled with same name successfully \n" << "********************** \n" ;
       }
          return 0;
    }   
@@ -155,6 +160,7 @@ class assemble {
             std::string padding(16-binary.size(), '0');   //adds padding to binary
             binary = padding + binary;
             instructions += binary + '\n';
+            log_file += line + " : " + binary + '\n';
          } 
 
          else {   //dest=comp+jmp  if C instruction
@@ -169,12 +175,14 @@ class assemble {
             c = line.substr(a, b);
             
             instructions += "111" + comp[c] + dest[d] + jmp[j] + '\n';
-            std::cout << line << " : " << dest[d] << " dest " << comp[c] << " comp " << jmp[j] << " jmp " << std::endl;
+            log_file += line + " : " + dest[d] + " dest " + comp[c] + " comp " + jmp[j] + " jmp " + '\n';
          }
 
       }
 
       instructions.erase(instructions.end()-1);  //trims the last newline
+      log_file.erase(log_file.end()-1);  //trims the last newline
+
       std::cout << "Translation compeleted \n" << "********************** \n";
       io_state = true;
 
