@@ -3,7 +3,7 @@
 #include<sstream>
 #include<algorithm>
 #include<unordered_map>
-#include <ctype.h>
+#include<map>
 
 class assemble {
    
@@ -20,18 +20,18 @@ class assemble {
 
    int file_handler() {     //method for file I/O management
 
-      if (io_state == 0) {  //Input file handler
+      if (io_state == false) {  //Input file handler
             std::fstream i_file_handle;
              while (true)   //open file    
                {
                   std::cout << "Input the file name (without extension)    <----->       ctrl+c to exit\n";
                   std::getline(std::cin, file_name);
-                  i_file_handle.open(file_name+".asm", std::ifstream::in); 
+                  i_file_handle.open(file_name+".asm", std::ifstream::in | std::ifstream::binary); 
 
                      if (i_file_handle.seekg(0, std::ios::end)) {   //get data in instructions and close file. 
                         
                         instructions.resize(i_file_handle.tellg());
-                        i_file_handle.seekg(std::ios::beg);
+                        i_file_handle.seekg(0, std::ios::beg);
                         i_file_handle.read(&instructions[0], instructions.size()); //read the file and store it
 
                         std::cout << "File Read Successfully. \n" << "********************** \n" ; 
@@ -46,25 +46,27 @@ class assemble {
          }
       else {  //Output file handler
          std::fstream o_file_handle;
-         o_file_handle.open(file_name + ".hack", std::ofstream::out | std::ofstream::trunc);
+         o_file_handle.open(file_name + ".hack", std::ofstream::out | std::ostream::binary | std::ofstream::trunc);
          
          o_file_handle << instructions; 
          o_file_handle.close();
          std::cout << "File Assembled with same name successfully \n" << "********************** \n" ;
-         return 0;
       }
+         return 0;
    }   
 
    void cleaner() {      //method to clear whitespace and comments from code
 
       instructions.erase(std::remove_if(instructions.begin(), instructions.end(), ::isblank), instructions.end());   //clears all whitespace
+      instructions.erase(std::remove_if(instructions.begin(), instructions.end(),  [](unsigned char x){ if(x == '\r') return 1; else return 0; }), instructions.end());   //clears all whitespace
 
       std::istringstream stream(instructions);
       std::string line;
       instructions.clear();
 
       while(std::getline(stream, line)) {   //cleans comments
-         
+
+        
          if (!line.length()) continue;
 
          else if (line.find("//") != std::string::npos) {
@@ -84,7 +86,7 @@ class assemble {
    void first_pass_labels() {     //parses through instructions and stores labels and their values
  
       std::istringstream stream(instructions);
-      std::string line;
+      std::string line = "";
       int count = 0;  
       instructions.clear();
       
@@ -100,31 +102,45 @@ class assemble {
          }
       }
       instructions.erase(instructions.end()-1);  //trims the last newline
+      instructions = instructions;
+
       std::cout << "First Pass Completed \n" << "********************** \n";
    }
    
    void second_pass_var() {   //stores and replaces variables. Replaces label mentions
       
       std::istringstream stream(instructions);
-      std::string line;
-      int reg = 16;
+      std::string line = "";
+      int reg = 15;
+      int i = 0;
       instructions.clear();
       
       while(std::getline(stream, line)) {
+      //std::cout << line << "|" << std::endl;   
+      i++;
+      //std::flush(std::cout);
          if(line[0] == '@' && !std::isdigit(line[1])) {    //if A instruction and non register declaration
+            std::string key = "";
+            key = line.substr(1);
 
             //inserts variable and value, ignores duplicates
-            auto [a, b] = symbol.insert(std::pair<std::string, std::string>(line.substr(1, line.size()), std::to_string(reg)));     
-            if(b) reg++;
+            if(symbol.find(key) == symbol.end()) {
+               // symbol[line.substr(1, line.size())] = std::to_string(++reg); 
 
-            line.replace(1, line.size(), symbol[line.substr(1, line.size())]);   //replaces label/variables with numerical value
+            }
+            line.replace(1, line.size(), symbol.at(line.substr(1, line.size())));   //replaces label/variables with numerical value
             instructions += line + '\n';
-         }  
+         }   
 
          else instructions += line + '\n';
       }
 
-      //instructions.erase(instructions.end()-1);  //trims the last newline
+            for(auto it = symbol.cbegin(); it != symbol.cend(); ++it)
+      {
+        std::cout << it->first << " :"<< it->second << " " << std::endl; 
+      }
+
+      instructions.erase(instructions.end()-1);  //trims the last newline
       std::cout << "Second Pass Completed, variables stored \n" << "********************** \n";
    }
 
@@ -153,14 +169,14 @@ class assemble {
             std::string j = "";
             int a = 0;
             int b = line.length();
-            std::cout << b << std::endl;
+            //std::cout << b << std::endl;
 
             if(line.find('=') != std::string::npos)  d = line.substr(0, line.find('=')); a = line.find('=')+1;
             if(line.find(';') != std::string::npos) j = line.substr(line.find(';')+1, line.length()); b = line.find(';'); 
             c = line.substr(a, b);
             
             instructions += "111" + comp[c] + dest[d] + jmp[j] + '\n';
-            std::cout <<j + ' ' << jmp[j] << std::endl;
+            //std::cout << line << " : " << dest[d] << " dest " << comp[c] << " comp " << jmp[j] << " jmp " << std::endl;
          }
 
       }
@@ -168,7 +184,6 @@ class assemble {
       instructions.erase(instructions.end()-1);  //trims the last newline
       std::cout << "Translation compeleted \n" << "********************** \n";
       io_state = true;
-      //std::cout << instructions;
 
    }
 
@@ -184,10 +199,10 @@ int main()
        
        code.file_handler();
        code.cleaner();
-       code.first_pass_labels();
-       code.second_pass_var();
-       code.translator();
-       code.file_handler();
+       //code.first_pass_labels();
+       //code.second_pass_var();
+       //code.translator();
+       //code.file_handler();
 
        return 0;
     }

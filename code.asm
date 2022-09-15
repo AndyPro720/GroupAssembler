@@ -41,7 +41,7 @@ M=0
 @add
 M=M+1
 D=D-M
-@NOKEY
+@SP
 D;JGE
 @LOOP
 0;JMP
