@@ -67,7 +67,7 @@ class assemble {
       while(std::getline(stream, line)) {   //cleans comments
 
         
-         if (!line.length()) continue;
+         if (!line.size()) continue;
 
          else if (line.find("//") != std::string::npos) {
             if(line.find("//") == 0) continue;
@@ -86,23 +86,22 @@ class assemble {
    void first_pass_labels() {     //parses through instructions and stores labels and their values
  
       std::istringstream stream(instructions);
-      std::string line = "";
-      int count = 0;  
+      std::string line;
+      int instr_no = 0;  
       instructions.clear();
       
       while(std::getline(stream, line)) {        
 
          if(line.find('(') != std::string::npos) {   //stores labels
-            symbol[line.substr(1, line.find(')')-1)] = std::to_string(count);
+            symbol[line.substr(1, line.find(')')-1)] = std::to_string(instr_no);
          }
 
          else {    //regular instructions
             instructions += line + '\n';
-            count++;
+            instr_no++;
          }
       }
       instructions.erase(instructions.end()-1);  //trims the last newline
-      instructions = instructions;
 
       std::cout << "First Pass Completed \n" << "********************** \n";
    }
@@ -110,35 +109,27 @@ class assemble {
    void second_pass_var() {   //stores and replaces variables. Replaces label mentions
       
       std::istringstream stream(instructions);
-      std::string line = "";
+      std::string line;
+      std::string key;
       int reg = 15;
-      int i = 0;
       instructions.clear();
       
       while(std::getline(stream, line)) {
-      //std::cout << line << "|" << std::endl;   
-      i++;
-      //std::flush(std::cout);
          if(line[0] == '@' && !std::isdigit(line[1])) {    //if A instruction and non register declaration
-            std::string key = "";
             key = line.substr(1);
 
             //inserts variable and value, ignores duplicates
             if(symbol.find(key) == symbol.end()) {
-               // symbol[line.substr(1, line.size())] = std::to_string(++reg); 
-
+                symbol[key] = std::to_string(++reg); 
             }
-            line.replace(1, line.size(), symbol.at(line.substr(1, line.size())));   //replaces label/variables with numerical value
+
+            line.replace(1, line.size(), symbol.at(key));   //replaces label/variables with numerical value
             instructions += line + '\n';
          }   
 
          else instructions += line + '\n';
       }
 
-            for(auto it = symbol.cbegin(); it != symbol.cend(); ++it)
-      {
-        std::cout << it->first << " :"<< it->second << " " << std::endl; 
-      }
 
       instructions.erase(instructions.end()-1);  //trims the last newline
       std::cout << "Second Pass Completed, variables stored \n" << "********************** \n";
@@ -148,35 +139,37 @@ class assemble {
       std::istringstream stream(instructions);
       std::string line;
       instructions.clear();
+      std::string binary; 
       
       while(getline(stream, line)) {
 
          if(line[0] == '@') {    //if A instruction
-            int n = std::stoi(line.substr(1, line.length()));
-            std::string binary; 
+            int n = std::stoi(line.substr(1, line.size()));
+            binary.clear();
 
             while(n!=0) {     //convert n to binary
                binary = (n%2==0 ?"0":"1") + binary; 
                n/=2; 
             }
-            std::string padding(16-binary.length(), '0');   //adds padding to binary
+
+            std::string padding(16-binary.size(), '0');   //adds padding to binary
             binary = padding + binary;
             instructions += binary + '\n';
          } 
+
          else {   //dest=comp+jmp  if C instruction
             std::string d = "";
             std::string c = "";
             std::string j = "";
             int a = 0;
-            int b = line.length();
-            //std::cout << b << std::endl;
+            int b = line.size();
 
-            if(line.find('=') != std::string::npos)  d = line.substr(0, line.find('=')); a = line.find('=')+1;
-            if(line.find(';') != std::string::npos) j = line.substr(line.find(';')+1, line.length()); b = line.find(';'); 
+            if(line.find('=') != std::string::npos)  { d = line.substr(0, line.find('=')); a = line.find('=')+1; }  //if dest exists
+            if(line.find(';') != std::string::npos)  { j = line.substr(line.find(';')+1, line.size()); b = line.find(';'); } //if jmp exists 
             c = line.substr(a, b);
             
             instructions += "111" + comp[c] + dest[d] + jmp[j] + '\n';
-            //std::cout << line << " : " << dest[d] << " dest " << comp[c] << " comp " << jmp[j] << " jmp " << std::endl;
+            std::cout << line << " : " << dest[d] << " dest " << comp[c] << " comp " << jmp[j] << " jmp " << std::endl;
          }
 
       }
@@ -190,19 +183,16 @@ class assemble {
 }; 
 
 
-
-
-
 int main()
     {
        assemble code;
        
        code.file_handler();
        code.cleaner();
-       //code.first_pass_labels();
-       //code.second_pass_var();
-       //code.translator();
-       //code.file_handler();
+       code.first_pass_labels();
+       code.second_pass_var();
+       code.translator();
+       code.file_handler();
 
        return 0;
     }
