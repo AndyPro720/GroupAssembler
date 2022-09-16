@@ -3,7 +3,6 @@
 #include<sstream>
 #include<algorithm>
 #include<unordered_map>
-#include<map>
 
 class assemble {
    
@@ -13,13 +12,14 @@ class assemble {
    std::unordered_map <std::string, std::string> dest;
    std::unordered_map <std::string, std::string> comp;
    std::unordered_map <std::string, std::string> jmp;
-   std::string file_name;
 
    public:
    assemble();
    bool io_state = false;
 
    int file_handler() {     //method for file I/O management
+
+   std::string file_name;
 
       if (io_state == false) {  //Input file handler
             std::fstream i_file_handle;
@@ -47,7 +47,7 @@ class assemble {
          }
       else {  //Output file handler
          std::fstream o_file_handle;
-         std::ofstream log(file_name + "_log_file.txt", std::ostream::out | std::ostream::binary | std::ofstream::binary);
+         std::ofstream log(file_name + "_log_file.txt", std::ostream::out | std::ostream::binary | std::ofstream::trunc);
          o_file_handle.open(file_name + ".hack", std::ofstream::out | std::ostream::binary | std::ofstream::trunc);
          
          o_file_handle << instructions; 
@@ -63,7 +63,7 @@ class assemble {
    void cleaner() {      //method to clear whitespace and comments from code
 
       instructions.erase(std::remove_if(instructions.begin(), instructions.end(), ::isblank), instructions.end());   //clears all whitespace
-      instructions.erase(std::remove_if(instructions.begin(), instructions.end(),  [](unsigned char x){ if(x == '\r') return 1; else return 0; }), instructions.end());   //clears all whitespace
+      instructions.erase(std::remove_if(instructions.begin(), instructions.end(),  [](unsigned char x){ if(x == '\r') return 1; else return 0; }), instructions.end());   //removes \r line endings(windows systems)
 
       std::istringstream stream(instructions);
       std::string line;
@@ -116,7 +116,7 @@ class assemble {
       std::istringstream stream(instructions);
       std::string line;
       std::string key;
-      int reg = 15;
+      int reg = 15;  //variables memory starts from 15+
       instructions.clear();
       
       while(std::getline(stream, line)) {
@@ -174,7 +174,7 @@ class assemble {
             if(line.find(';') != std::string::npos)  { j = line.substr(line.find(';')+1, line.size()); b = line.find(';'); } //if jmp exists 
             c = line.substr(a, b);
             
-            instructions += "111" + comp[c] + dest[d] + jmp[j] + '\n';
+            instructions += "111" + comp[c] + dest[d] + jmp[j] + '\n'; //translation
             log_file += line + " : " + dest[d] + " dest " + comp[c] + " comp " + jmp[j] + " jmp " + '\n';
          }
 
@@ -184,7 +184,7 @@ class assemble {
       log_file.erase(log_file.end()-1);  //trims the last newline
 
       std::cout << "Translation compeleted \n" << "********************** \n";
-      io_state = true;
+      io_state = true; //for file_handler()
 
    }
 
