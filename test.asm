@@ -3,8 +3,7 @@
 //                              Store -1
 //Else                          Store 0 
 
-
-(LOOP)
+(LOOP) 
 @SCREEN
 D=A
 @add           //address pointer

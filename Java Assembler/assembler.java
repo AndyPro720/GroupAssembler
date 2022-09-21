@@ -190,9 +190,8 @@ public class Assembler {
             while((i = br.readLine()) != null) {
 
                 lineno++;
-
-                if(i.startsWith("(")) {           //label found
-
+                 
+                if(i.startsWith("(")) {           //label found  
                         symbol.put(i.substring(i.indexOf('(') + 1, i.indexOf(')')), String.valueOf((--lineno)+1));        //add to symbol table
                         continue;                //skip line
     
