@@ -1,8 +1,9 @@
 #include<stdio.h>
 #include<string.h>
+#include<ctype.h>
 
 char file_name[50] = {'\0'}, line[1000], instructions[1000000];
-int sym_index = 24;
+int sym_index = 23;
 struct map 
 {
    char key[1000][100];
@@ -69,6 +70,18 @@ struct map symbol_table = {
         } 
 };
 
+int mapf(char *id, char *value) {    //searches for string in key and puts value in second argument. Returns 1 if found, else 0.
+
+    for(int j = 0; j < sym_index; j++) {
+       if(!strcmp(symbol_table.key[j], id)) {
+            strcpy(value, symbol_table.value[j]);
+            return 1;
+       } 
+    }
+
+    *value = '\0';
+    return 0;
+}
 
 void file_handler (void) {
    FILE * fp;
@@ -119,7 +132,8 @@ void cleaner(void) {  //removes whitespace and comments
             }
             break;
         }
-    }while(*sp++ = *dp++);      //puts next valid character in destination pointer(*dp) in the location pointed by string pointer(*sp), thus altering string. Increments both to next char, until NULL.
+    }while(*sp++ = *dp++);      //puts the character pointed by(*dp) in the location pointed by string pointer(*sp), thus altering string.
+                                // Increments both to next char, until dp returns NULL.
     
     dp = sp = instructions; //reset pointers
     do {        //clear any consecutive newlines(empty lines) 
@@ -136,7 +150,7 @@ void cleaner(void) {  //removes whitespace and comments
     }while(*sp++ = *dp++);
     
     
-    printf("\nCleaner executed  successfully.");
+    printf("\nCleaner executed successfully.");
     printf("\n**************************************");
 }
 
@@ -165,16 +179,48 @@ void first_pass_labels(void) {          //Extract label and add it to symbol tab
 
     }while(*sp++ = *dp++);     
 
-    printf("\nFirst Pass executed  successfully.");
+    printf("\nFirst Pass executed successfully.");
     printf("\n**************************************");
     
 }
+
+void second_pass_var(void) {        //stores variables, replaces label and variable calls with value
+    char *sp, *dp, *id, *v, identifer[100], value[100];
+    sp = dp = instructions;
+    int reg = 15;
+    
+    do {
+    id = identifer, v = value; //reset pointers
+
+        if(*dp == '@' && !(isdigit(*(dp+1)))) {    //if A instruction and not reg declaration
+           *sp++ = *dp++; //write @ 
+
+           while(*dp != '\n') *id++ = *dp++;    //extract identifier and store 
+           *id = '\0';
+
+           if(mapf(identifer, value)) {    //if id found, write value after @
+             while(*v != '\0') *sp++ = *v++;
+           }
+           
+           else {       //store variable and value, write after @ 
+            strcpy(symbol_table.key[sym_index], identifer);
+            strcpy(symbol_table.value[sym_index++], itos(++reg));
+            
+            strcpy(value, itos(reg));
+            while(*v != '\0') *sp++ = *v++;
+           }
+       }    
+    }while(*sp++ = *dp++);
+
+    printf("\nSecond Pass executed successfully.");
+    printf("\n**************************************");
+    }  
 
 int main (void) {
 
     file_handler();
     cleaner();
     first_pass_labels();
-    
+    second_pass_var();
     return 0;
 }

@@ -19,7 +19,7 @@ D;JNE
 0;JMP
 
 (KEY)        //while key pressed, store -1 in next 100 registers 
-@1/6484     
+@16484     
 D=A
 @add
 A=M
