@@ -2,7 +2,7 @@
 #include<string.h>
 
 char file_name[50] = {'\0'}, line[1000], instructions[1000000];
-unsigned int sym_index = 24;
+int sym_index = 24;
 struct map 
 {
    char key[1000][100];
@@ -10,7 +10,7 @@ struct map
 };
 
 char * itos(int number) {   //converts int to string and returns value 
-    static char string[100];
+    static char string[100];  
     snprintf(string, sizeof(string), "%d", number);   
     return string;
 }
@@ -153,9 +153,9 @@ void first_pass_labels(void) {          //Extract label and add it to symbol tab
             while(*dp != ')') *lp++ = *dp++;  //store label refrence in label var 
             *lp = '\0';         
             
-            strcpy(symbol_table.key[sym_index++], label);
+            strcpy(symbol_table.key[sym_index], label);
             strcpy(symbol_table.value[sym_index++], itos(line));
-            //printf("%s %s\n", symbol_table.key[23], symbol_table.value[23]);
+            //printf("%s %s\n", symbol_table.key[sym_index-1], symbol_table.value[sym_index-1]);
             
             dp += 2;   //skip ) and \n
         }  
@@ -165,6 +165,8 @@ void first_pass_labels(void) {          //Extract label and add it to symbol tab
 
     }while(*sp++ = *dp++);     
 
+    printf("\nFirst Pass executed  successfully.");
+    printf("\n**************************************");
     
 }
 
