@@ -2,6 +2,73 @@
 #include<string.h>
 
 char file_name[50] = {'\0'}, line[1000], instructions[1000000];
+unsigned int sym_index = 24;
+struct map 
+{
+   char key[1000][100];
+   char value[1000][10]; 
+};
+
+char * itos(int number) {   //converts int to string and returns value 
+    static char string[100];
+    snprintf(string, sizeof(string), "%d", number);   
+    return string;
+}
+
+struct map symbol_table = {
+   .key = {
+         "R0",
+         "R1",
+         "R2",
+         "R3",
+         "R4",
+         "R5",
+         "R6",
+         "R7",
+         "R8",
+         "R9",
+         "R10",
+         "R11",
+         "R12",
+         "R13",
+         "R14",
+         "R15",
+         "SCREEN",
+         "KBD",
+         "SP",
+         "LCL",
+         "ARG",
+         "THIS",
+         "THAT"
+        }, 
+   
+  .value = {
+         "0",
+         "1",
+         "2",
+         "3",
+         "4",
+         "5",
+         "6",
+         "7",
+         "8",
+         "9",
+         "10",
+         "11",
+         "12",
+         "13",
+         "14",
+         "15",
+         "16384",
+         "24576",
+         "0",
+         "1",
+         "2",
+         "3",
+         "4"
+        } 
+};
+
 
 void file_handler (void) {
    FILE * fp;
@@ -34,6 +101,7 @@ void file_handler (void) {
 }
 
 void cleaner(void) {  //removes whitespace and comments
+
    //should create a copy 
     char *dp, *sp;
     dp = sp = instructions;
@@ -51,9 +119,9 @@ void cleaner(void) {  //removes whitespace and comments
             }
             break;
         }
-    }while(*sp++ = *dp++);      //puts next valid character(*dp) in the location pointed by (*sp), thus altering string. Increments both to next char, until NULL.
+    }while(*sp++ = *dp++);      //puts next valid character in destination pointer(*dp) in the location pointed by string pointer(*sp), thus altering string. Increments both to next char, until NULL.
     
-    dp = sp = instructions;
+    dp = sp = instructions; //reset pointers
     do {        //clear any consecutive newlines(empty lines) 
 
         if(instructions[0] == '\n') dp++; 
@@ -72,10 +140,39 @@ void cleaner(void) {  //removes whitespace and comments
     printf("\n**************************************");
 }
 
+void first_pass_labels(void) {          //Extract label and add it to symbol table with value(line number)
+    char *sp, *dp, label[100], *lp;
+    sp = dp = instructions;
+    lp = label;
+    int line = 0;
+    
+    
+    do {
+        while(*dp == '(') {        //find label 
+            dp++; 
+            while(*dp != ')') *lp++ = *dp++;  //store label refrence in label var 
+            *lp = '\0';         
+            
+            strcpy(symbol_table.key[sym_index++], label);
+            strcpy(symbol_table.value[sym_index++], itos(line));
+            //printf("%s %s\n", symbol_table.key[23], symbol_table.value[23]);
+            
+            dp += 2;   //skip ) and \n
+        }  
+        lp = label;  //reset label pointer
+
+        if(*dp == '\n') line++;     //count lines
+
+    }while(*sp++ = *dp++);     
+
+    
+}
 
 int main (void) {
 
     file_handler();
     cleaner();
+    first_pass_labels();
+    
     return 0;
 }
