@@ -43,5 +43,5 @@ M=M+1
 D=D-M
 @hello
 D;JGE
-@LOOP
+@SCREEN
 0;JMP

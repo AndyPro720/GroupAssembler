@@ -1,8 +1,11 @@
 #include<stdio.h>
+#include<stdlib.h>
 #include<string.h>
 #include<ctype.h>
 
-char file_name[50] = {'\0'}, line[1000], instructions[1000000];
+//declaring all global variables and functions
+
+char file_name[50] = {'\0'}, line[1000], instructions[1000000], binary[1000000]; 
 int sym_index = 23;
 struct map 
 {
@@ -216,11 +219,56 @@ void second_pass_var(void) {        //stores variables, replaces label and varia
     printf("\n**************************************");
     }  
 
+void translator(void) {     //translate instructions to 16bit binary code
+
+    char *sp, *dp, *lp, line[1000];
+    sp = instructions; //string pointer
+    dp = binary;    //destination pointer
+    lp = line;      //line pointer
+
+    do{     //read by line and send for translation 
+       while(*sp != '\n' && *sp != '\0')  *lp++ = *sp++;    //read line and store it (\0 condition for last line)  
+       *lp = '\0';  
+        lp = line;   //reset line pointer 
+       
+      if(line[0] == '@') {  //if A instructions
+          char *end = NULL, bin[17], *bp;
+          bp = bin;
+
+          long p = 16, i = strtol((line+1), &end, 10);  //convert string to int/long
+          
+          while(p--) *bp++ = '0';   //add padding of 16 zeros 
+          *bp = '\0';   
+
+          do{       //converts to binary (gives bin in reverse, hence stored from end) 
+            (*(--bp) = (i % 2) > 0 ? '1' : '0');
+          }while(i/=2);
+          bp = bin;
+
+          while(*bp != '\0') *dp++ = *bp++;     //write to destination pointer 
+          *dp++ = *sp;    //add line ending
+      } 
+      
+      else {    //for C instructions
+
+        
+      } 
+      
+
+       //printf("%s\n", line);
+
+    }while(*sp++ != '\0');     //goes to next char if line ending is not \0 
+   *dp = '\0'; 
+          printf("%s", binary);
+    
+}
+
 int main (void) {
 
     file_handler();
     cleaner();
     first_pass_labels();
     second_pass_var();
+    translator();
     return 0;
 }
