@@ -44,4 +44,4 @@ D=D-M
 @hello
 D;JGE
 @SCREEN
-0;JMP
+A=0;JMP

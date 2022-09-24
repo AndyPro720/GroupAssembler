@@ -97,10 +97,11 @@ struct map dest = {
          "AM",
          "AD",
          "AMD"
-        }
+        },
+    .index = 8
 };
 
-struct map jump = {
+struct map jmp = {
 
     .value = {
          "000",
@@ -121,7 +122,8 @@ struct map jump = {
          "JNE",
          "JLE",
          "JMP"
-        }
+        },
+    .index = 8
 };
 
 struct map comp = {
@@ -185,7 +187,8 @@ struct map comp = {
          "D&M",
          "D|A",
          "D|M"
-        }
+        },
+    .index = 28
 };
 
 int mapf(char *id, char *value, struct map *table) {    //searches for id in key and puts value in second argument(if not found puts NULL) 
@@ -365,26 +368,60 @@ void translator(void) {     //translate instructions to 16bit binary code
       } 
       
       else {    //for C instructions
-          
-          char *token;
-          token = strtok(line, "=;");
-          while(token != NULL) {
-            
-            printf("%s ", token);
-            token = strtok(NULL, "=;");
+         //dest = comp; jmp 
+          char c[6], j[4], id[6] = "", *idp; 
+          char d[10];
+          idp = id;
+          int d_flag = 1, j_flag = 1;
+
+          if(strchr(line, '=')) {   //if dest exists
+            while(*lp != '=') *idp++ = *lp++;
+            idp = '\0', lp++;
+
+            mapf(id, d, &dest); 
+            idp = id, d_flag = 0;
           }
-          printf("\n");
 
-        
+          if(strchr(line, ';')) {   //if jmp exists
+
+            while(*lp != ';') *idp++ = *lp++;   //get comp
+            idp = '\0', lp++;
+            mapf(id, c, &comp); 
+            idp = id;
+            
+            while(*lp != '\0') *idp++ = *lp++;    //get jmp
+            idp = '\0';
+            mapf(id, j, &jmp);
+            idp = id, j_flag = 0;
+          }
+          
+          if(*lp != '\0') {    //if comp not grabbed yet
+              while(*lp != '\0') *idp++ = *lp++;
+              idp = '\0';
+              mapf(id, c, &comp); 
+              idp = id;
+          }
+          
+          //if dest/jmp don't exist
+          if(d_flag) mapf("", d, &dest);
+          if(j_flag) mapf("", j, &dest);
+          idp = id;
+          
+          char *cp = c, *d_p = d, *jp = j;
+          
+          //write bin (111 comp dest jmp)
+          for(int x = 3; x > 0; x--) *dp++ = '1';
+          while(*cp != '\0') *dp++ = *cp++; 
+          while(*d_p != '\0') *dp++ = *d_p++; 
+          while(*jp != '\0') *dp++ = *jp++; 
+          *dp++ = *sp;  //add endline char
       } 
-      
-
-       //printf("%s\n", line);
+        lp = line;   //reset line pointer 
 
     }while(*sp++ != '\0');     //goes to next char if line ending is not \0 
-   *dp = '\0'; 
-          //printf("%s", binary);
     
+    printf("\nTranslation completed successfully.");
+    printf("\n**************************************");
 }
 
 int main (void) {
