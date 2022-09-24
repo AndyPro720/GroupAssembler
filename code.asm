@@ -8,7 +8,7 @@
 @SCREEN
 D=A
 @add           //address pointer
-M=D
+M=D;JMP
 
 (CHECK)       //Checks if key pressed
 @KBD

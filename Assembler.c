@@ -11,6 +11,7 @@ struct map
 {
    char key[1000][100];
    char value[1000][10]; 
+   int index;
 };
 
 char * itos(int number) {   //converts int to string and returns value 
@@ -70,14 +71,128 @@ struct map symbol_table = {
          "2",
          "3",
          "4"
-        } 
+        }, 
+
+   .index = 23
 };
 
-int mapf(char *id, char *value) {    //searches for string in key and puts value in second argument. Returns 1 if found, else 0.
+struct map dest = {
 
-    for(int j = 0; j < sym_index; j++) {
-       if(!strcmp(symbol_table.key[j], id)) {
-            strcpy(value, symbol_table.value[j]);
+    .value = {
+         "000",
+         "001",
+         "010",
+         "011",
+         "100",
+         "101",
+         "110",
+         "111"
+        },
+    .key = {
+         "",
+         "M",
+         "D",
+         "MD",
+         "A",
+         "AM",
+         "AD",
+         "AMD"
+        }
+};
+
+struct map jump = {
+
+    .value = {
+         "000",
+         "001",
+         "010",
+         "011",
+         "100",
+         "101",
+         "110",
+         "111"
+        },
+    .key = {
+         "",
+         "JGT",
+         "JEQ",
+         "JGE",
+         "JLT",
+         "JNE",
+         "JLE",
+         "JMP"
+        }
+};
+
+struct map comp = {
+
+    .value = {
+         "0101010",
+         "0111111",
+         "0111010",
+         "0001100",
+         "0110000",
+         "1110000",
+         "0001101",
+         "0110001",
+         "1110001",
+         "0001111",
+         "0110011",
+         "1110011",
+         "0011111",
+         "0110111",
+         "1110111",
+         "0001110",
+         "0110010",
+         "1110010",
+         "0000010",
+         "1000010",
+         "0010011",
+         "1010011",
+         "0000111",
+         "1000111",
+         "0000000",
+         "1000000",
+         "0010101",
+         "1010101"
+        },
+    .key = {
+         "0",
+         "1",
+         "-1",
+         "D",
+         "A",
+         "M",
+         "!D",
+         "!A",
+         "!M",
+         "-D",
+         "-A",
+         "-M",
+         "D+1",
+         "A+1",
+         "M+1",
+         "D-1",
+         "A-1",
+         "M-1",
+         "D+A",
+         "D+M",
+         "D-A",
+         "D-M",
+         "A-D",
+         "M-D",
+         "D&A",
+         "D&M",
+         "D|A",
+         "D|M"
+        }
+};
+
+int mapf(char *id, char *value, struct map *table) {    //searches for id in key and puts value in second argument(if not found puts NULL) 
+                                                        //Returns 1 if found, else 0.
+    for(int j = 0; j < table->index; j++) {
+       if(!strcmp(table->key[j], id)) {
+            strcpy(value, table->value[j]);
             return 1;
        } 
     }
@@ -170,9 +285,9 @@ void first_pass_labels(void) {          //Extract label and add it to symbol tab
             while(*dp != ')') *lp++ = *dp++;  //store label refrence in label var 
             *lp = '\0';         
             
-            strcpy(symbol_table.key[sym_index], label);
-            strcpy(symbol_table.value[sym_index++], itos(line));
-            //printf("%s %s\n", symbol_table.key[sym_index-1], symbol_table.value[sym_index-1]);
+            strcpy(symbol_table.key[symbol_table.index], label);
+            strcpy(symbol_table.value[symbol_table.index++], itos(line));
+            //printf("%s %s\n", symbol_table.key[symbol_table.index-1], symbol_table.value[symbol_table.index-1]);
             
             dp += 2;   //skip ) and \n
         }  
@@ -201,13 +316,13 @@ void second_pass_var(void) {        //stores variables, replaces label and varia
            while(*dp != '\n') *id++ = *dp++;    //extract identifier and store 
            *id = '\0';
 
-           if(mapf(identifer, value)) {    //if id found, write value after @
+           if(mapf(identifer, value, &symbol_table)) {    //if id found, write value after @
              while(*v != '\0') *sp++ = *v++;
            }
            
            else {       //store variable and value, write after @ 
-            strcpy(symbol_table.key[sym_index], identifer);
-            strcpy(symbol_table.value[sym_index++], itos(++reg));
+            strcpy(symbol_table.key[symbol_table.index], identifer);
+            strcpy(symbol_table.value[symbol_table.index++], itos(++reg));
             
             strcpy(value, itos(reg));
             while(*v != '\0') *sp++ = *v++;
@@ -232,10 +347,10 @@ void translator(void) {     //translate instructions to 16bit binary code
         lp = line;   //reset line pointer 
        
       if(line[0] == '@') {  //if A instructions
-          char *end = NULL, bin[17], *bp;
+          char bin[17], *bp;
           bp = bin;
 
-          long p = 16, i = strtol((line+1), &end, 10);  //convert string to int/long
+          long p = 16, i = strtol((line+1), NULL, 10);  //convert string to int/long
           
           while(p--) *bp++ = '0';   //add padding of 16 zeros 
           *bp = '\0';   
@@ -250,6 +365,15 @@ void translator(void) {     //translate instructions to 16bit binary code
       } 
       
       else {    //for C instructions
+          
+          char *token;
+          token = strtok(line, "=;");
+          while(token != NULL) {
+            
+            printf("%s ", token);
+            token = strtok(NULL, "=;");
+          }
+          printf("\n");
 
         
       } 
@@ -259,7 +383,7 @@ void translator(void) {     //translate instructions to 16bit binary code
 
     }while(*sp++ != '\0');     //goes to next char if line ending is not \0 
    *dp = '\0'; 
-          printf("%s", binary);
+          //printf("%s", binary);
     
 }
 
