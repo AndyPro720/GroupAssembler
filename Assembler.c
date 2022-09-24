@@ -204,9 +204,11 @@ int mapf(char *id, char *value, struct map *table) {    //searches for id in key
     return 0;
 }
 
-void file_handler (void) {
+void file_handler (int read) {
    FILE * fp;
    char  *p;
+   
+   if(read) {
 
    do   //Open the file
    {
@@ -217,8 +219,10 @@ void file_handler (void) {
     size_t index = p - file_name;
     file_name[index] = '\0';
 
-    strcat(file_name, ".asm"); //appending .asm extension
-    fp = fopen(file_name, "r");
+    char input[100];
+    strcpy(input, file_name);
+    strcat(input, ".asm"); //appending .asm extension
+    fp = fopen(input, "r");
 
 
     } while(fp == NULL) ;
@@ -227,11 +231,25 @@ void file_handler (void) {
    while(fgets(line, sizeof(line), fp) != NULL) {
        strcat(instructions, line);
    }
-
     fclose(fp);
-
     printf("\nFile read successfully.");
     printf("\n**************************************");
+    }
+   
+   else {
+
+    strcat(file_name, ".hack"); //appending .asm extension
+    fp = fopen(file_name, "w");
+    
+    //write to file
+    while(fputs(binary, fp));
+    
+    fclose(fp);
+    printf("\nOutput file assembled with same name successfully.");
+    printf("\n**************************************");
+
+   }
+
 }
 
 void cleaner(void) {  //removes whitespace and comments
@@ -293,8 +311,8 @@ void first_pass_labels(void) {          //Extract label and add it to symbol tab
             //printf("%s %s\n", symbol_table.key[symbol_table.index-1], symbol_table.value[symbol_table.index-1]);
             
             dp += 2;   //skip ) and \n
+            lp = label;  //reset label pointer
         }  
-        lp = label;  //reset label pointer
 
         if(*dp == '\n') line++;     //count lines
 
@@ -326,6 +344,7 @@ void second_pass_var(void) {        //stores variables, replaces label and varia
            else {       //store variable and value, write after @ 
             strcpy(symbol_table.key[symbol_table.index], identifer);
             strcpy(symbol_table.value[symbol_table.index++], itos(++reg));
+            //printf("%s %s\n", symbol_table.key[symbol_table.index-1], symbol_table.value[symbol_table.index-1]);
             
             strcpy(value, itos(reg));
             while(*v != '\0') *sp++ = *v++;
@@ -426,10 +445,11 @@ void translator(void) {     //translate instructions to 16bit binary code
 
 int main (void) {
 
-    file_handler();
+    file_handler(1);
     cleaner();
     first_pass_labels();
     second_pass_var();
     translator();
+    file_handler(0);
     return 0;
 }
