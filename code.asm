@@ -45,3 +45,4 @@ D=D-M
 D;JGE
 @SCREEN
 A=0;JMP
+@1

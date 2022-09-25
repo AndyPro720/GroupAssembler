@@ -5,17 +5,16 @@
 
 //declaring all global variables and functions
 
-char file_name[50] = {'\0'}, line[1000], instructions[1000000], binary[1000000]; 
-int sym_index = 23;
+char file_name[50] = "", instructions[1000000], binary[1000000]; 
 struct map 
 {
    char key[1000][100];
    char value[1000][10]; 
-   int index;
+   int index;   //points to next empty index
 };
 
 char * itos(int number) {   //converts int to string and returns value 
-    static char string[100];  
+    static char string[10];  
     snprintf(string, sizeof(string), "%d", number);   
     return string;
 }
@@ -192,9 +191,9 @@ struct map comp = {
 };
 
 int mapf(char *id, char *value, struct map *table) {    //searches for id in key and puts value in second argument(if not found puts NULL) 
-                                                        //Returns 1 if found, else 0.
+                                                        //Third argument gives map look in; Returns 1 if found, else 0.
     for(int j = 0; j < table->index; j++) {
-       if(!strcmp(table->key[j], id)) {
+       if(!strcmp(table->key[j], id)) {     //as strcmp returns 0 on succesful comparison
             strcpy(value, table->value[j]);
             return 1;
        } 
@@ -206,7 +205,7 @@ int mapf(char *id, char *value, struct map *table) {    //searches for id in key
 
 void file_handler (int read) {
    FILE * fp;
-   char  *p;
+   char line[1000], *p;
    
    if(read) {
 
@@ -216,25 +215,24 @@ void file_handler (int read) {
     fgets(file_name, sizeof(file_name), stdin);
 
     p = strrchr(file_name, '\n');  //remove the trailing newline
-    size_t index = p - file_name;
-    file_name[index] = '\0';
+    *p = '\0';
 
-    char input[100];
+    char input[55];
     strcpy(input, file_name);
     strcat(input, ".asm"); //appending .asm extension
-    fp = fopen(input, "r");
+    fp = fopen(input, "r"); 
 
 
-    } while(fp == NULL) ;
+    } while(fp == NULL);
    
-   //read the file, and store in instructions,  use binary?
+   //read the file, and store in instructions
    while(fgets(line, sizeof(line), fp) != NULL) {
        strcat(instructions, line);
    }
     fclose(fp);
     printf("\nFile read successfully.");
     printf("\n**************************************");
-    }
+  }
    
    else {
 
@@ -254,38 +252,23 @@ void file_handler (int read) {
 
 void cleaner(void) {  //removes whitespace and comments
 
-   //should create a copy 
-    char *dp, *sp;
+    char *dp, *sp;      //destination and string pointer
     dp = sp = instructions;
 
     do {        //clear empty space and comments
 
         while(*dp == ' ' || *dp == '\r' || *dp == '\f' || *dp == '\v'|| *dp == '\t')  dp++;   //skip through whitespace characters
 
-        while(*dp == '/') {         //skip till next line if comments(//)
-            if(*(dp+1) == '/') {
-               while(*dp != '\n') {
-                dp++;
-               } 
-               continue;
-            }
-            break;
-        }
-    }while(*sp++ = *dp++);      //puts the character pointed by(*dp) in the location pointed by string pointer(*sp), thus altering string.
+        while(*dp == '/' && *(dp+1) == '/') { while(*dp != '\n') dp++; }      //skip till next line if comments(//)
+
+    }while(*sp++ = *dp++);      //puts the character pointed by(*dp) in the location pointed by string pointer(*sp), thus rewriting string.
                                 // Increments both to next char, until dp returns NULL.
     
     dp = sp = instructions; //reset pointers
     do {        //clear any consecutive newlines(empty lines) 
+        if(instructions[0] == '\n') dp++;   //if first line is empty 
 
-        if(instructions[0] == '\n') dp++; 
-
-        while(*dp == '\n') {        
-            if(*(dp-1) == '\n') { 
-                dp++;
-                continue;
-            }
-           break; 
-        }
+        while(*dp == '\n' && *(dp-1) == '\n') { dp++; continue; }       
     }while(*sp++ = *dp++);
     
     
@@ -301,14 +284,13 @@ void first_pass_labels(void) {          //Extract label and add it to symbol tab
     
     
     do {
-        while(*dp == '(') {        //find label 
+        while(*dp == '(') {        //find label (while as labels may be consecutive)
             dp++; 
             while(*dp != ')') *lp++ = *dp++;  //store label refrence in label var 
             *lp = '\0';         
             
             strcpy(symbol_table.key[symbol_table.index], label);
             strcpy(symbol_table.value[symbol_table.index++], itos(line));
-            //printf("%s %s\n", symbol_table.key[symbol_table.index-1], symbol_table.value[symbol_table.index-1]);
             
             dp += 2;   //skip ) and \n
             lp = label;  //reset label pointer
@@ -334,7 +316,7 @@ void second_pass_var(void) {        //stores variables, replaces label and varia
         if(*dp == '@' && !(isdigit(*(dp+1)))) {    //if A instruction and not reg declaration
            *sp++ = *dp++; //write @ 
 
-           while(*dp != '\n') *id++ = *dp++;    //extract identifier and store 
+           while(*dp != '\n' && *dp != '\0') *id++ = *dp++;    //extract identifier and store, /0 condition for if last line 
            *id = '\0';
 
            if(mapf(identifer, value, &symbol_table)) {    //if id found, write value after @
@@ -344,10 +326,9 @@ void second_pass_var(void) {        //stores variables, replaces label and varia
            else {       //store variable and value, write after @ 
             strcpy(symbol_table.key[symbol_table.index], identifer);
             strcpy(symbol_table.value[symbol_table.index++], itos(++reg));
-            //printf("%s %s\n", symbol_table.key[symbol_table.index-1], symbol_table.value[symbol_table.index-1]);
             
             strcpy(value, itos(reg));
-            while(*v != '\0') *sp++ = *v++;
+            while(*v != '\0') *sp++ = *v++;     //write value
            }
        }    
     }while(*sp++ = *dp++);
@@ -369,8 +350,7 @@ void translator(void) {     //translate instructions to 16bit binary code
         lp = line;   //reset line pointer 
        
       if(line[0] == '@') {  //if A instructions
-          char bin[17], *bp;
-          bp = bin;
+          char bin[17], *bp = bin;
 
           long p = 16, i = strtol((line+1), NULL, 10);  //convert string to int/long
           
@@ -388,12 +368,11 @@ void translator(void) {     //translate instructions to 16bit binary code
       
       else {    //for C instructions
          //dest = comp; jmp 
-          char c[6], j[4], id[6] = "", *idp; 
-          char d[10];
-          idp = id;
+          char c[6], j[4], id[6] = "", *idp = id; 
+          char d[10];   //weird bug if declared above
           int d_flag = 1, j_flag = 1;
 
-          if(strchr(line, '=')) {   //if dest exists
+          if(strchr(line, '=')) {   //if dest exists, get d and disable flag
             while(*lp != '=') *idp++ = *lp++;
             idp = '\0', lp++;
 
@@ -411,7 +390,7 @@ void translator(void) {     //translate instructions to 16bit binary code
             while(*lp != '\0') *idp++ = *lp++;    //get jmp
             idp = '\0';
             mapf(id, j, &jmp);
-            idp = id, j_flag = 0;
+            idp = id, j_flag = 0;   //disable flag
           }
           
           if(*lp != '\0') {    //if comp not grabbed yet
@@ -424,7 +403,6 @@ void translator(void) {     //translate instructions to 16bit binary code
           //if dest/jmp don't exist
           if(d_flag) mapf("", d, &dest);
           if(j_flag) mapf("", j, &dest);
-          idp = id;
           
           char *cp = c, *d_p = d, *jp = j;
           
@@ -437,19 +415,19 @@ void translator(void) {     //translate instructions to 16bit binary code
       } 
         lp = line;   //reset line pointer 
 
-    }while(*sp++ != '\0');     //goes to next char if line ending is not \0 
+    }while(*sp++ != '\0');     //goes to next char(line) if line ending is not \0 
     
     printf("\nTranslation completed successfully.");
     printf("\n**************************************");
 }
 
-int main (void) {
+int main (void) {   //Take an assembly file as input and create an output file with the translated machine code
 
-    file_handler(1);
+    file_handler(1);    //read
     cleaner();
     first_pass_labels();
     second_pass_var();
     translator();
-    file_handler(0);
+    file_handler(0);    //write
     return 0;
 }
