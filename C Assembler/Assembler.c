@@ -1,17 +1,17 @@
-#include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 
 bool access = true;                             //binary var determines file to be read or written to
-char in[35] = "", instructions[30000] = "", logs[32000] = "";
+char in[35] = "", instructions[1000000] = "", logs[1000000] = "";
 int key_list = 23;
 
 struct symbol_table {
 
-    char k[1000][20];
+    char k[1000][50];
     char v[1000][6];
 
 };
@@ -42,7 +42,7 @@ struct symbol_table symbol = {
          "3",
          "4"
         },
-        .k = {
+    .k = {
          "R0",
          "R1",
          "R2",
@@ -272,7 +272,7 @@ void file_handler(void) {                   //File handler (for creating, access
 
 void cleaner(void) {                              //method for clearing whitespace and comments
 
-    char temp[30000] = "";
+    char temp[1000000] = "";
     int slash = 0;
     
     for(int i = 0; i < strlen(instructions); ++i) {
@@ -334,15 +334,15 @@ void cleaner(void) {                              //method for clearing whitespa
 
 void first_pass_labels(void) {                  //removes labels from instructions and adds them to symbol table
 
-    char temp[30000] = "", line[5] = "";
+    char temp[1000000] = "", line[6] = "";
     int lineno = -1;
 
     char * rest = instructions;
     char * i;
     
    while ((i = strtok_r(rest, "\n", &rest))) {
-
-        char label[20] = "";
+        
+        char label[40] = "";
         lineno++;
         
         if((strchr(i, '(')) != NULL) {                  //label found 
@@ -363,7 +363,6 @@ void first_pass_labels(void) {                  //removes labels from instructio
     }
 
     strcpy(instructions, temp);
-    instructions[(int)(strrchr(instructions, '\n') - instructions)] = '\0';
     
     printf("\nFirst pass Parsing.....\n");
     printf("\n**************************************\n");
@@ -375,30 +374,35 @@ void second_pass_var(void) {                        //replaces variables with co
     int reg = 16;
     char * i = "";
     char * rest = instructions;
-    char temp[30000] = "", line[5] = "";
+    char temp[1000000] = "", line[6] = "";
         
     while ((i = strtok_r(rest, "\n", &rest))) {
 
         if((strchr(i, '@')) != NULL) {                    //check if var found
-                    
-            char name[20] = "";
+   
+            char name[50] = "";
             int f = 0;
             strncpy(name, &i[1], strlen(i) - 1);
             bool flag = true;
 
             if(isdigit(name[0])) {                      //if addr mentioned instead of name
 
-                for(int j = 1; j < strlen(name); j++) {
+                int j = 1;
+                if(j == strlen(name)) 
+                    flag = false;
+                else {
+                    for(j = 1; j < strlen(name); j++) {
                     
-                    if (isdigit(name[j]))
-                        flag  = false; 
-                    else {
-                        
-                        flag = true;
-                        f = 1;
-                        break; 
+                        if (isdigit(name[j]))
+                            flag  = false; 
+                        else {
+                            
+                            flag = true;
+                            f = 1;
+                            break; 
 
-                    }                             
+                        }                             
+                    }
                 }
                 if(!flag) {
 
@@ -411,7 +415,7 @@ void second_pass_var(void) {                        //replaces variables with co
             if(flag) {                                    //if var in sybmol table then modify instruction
                 
                 for(int j = 0; j <= key_list + 1; j++) {
-
+                    
                     if(!(strcmp(symbol.k[j], name))) {        
 
                         flag = false;
@@ -430,11 +434,11 @@ void second_pass_var(void) {                        //replaces variables with co
                 strcpy(symbol.k[key_list], name);
                 sprintf(line, "%d", reg++);
                 strcpy(symbol.v[key_list++], line); 
-                
+                 
                 strcat(temp, "@");
                 strcat(temp, line);
                 strcat(temp, "\n");
-
+                
             }    
         }
         else {
@@ -446,7 +450,6 @@ void second_pass_var(void) {                        //replaces variables with co
     }
 
     strcpy(instructions, temp);
-    instructions[(int)(strrchr(instructions, '\n') - instructions)] = '\0';
 
     printf("\nSecond pass Parsing.....\n");
     printf("\n**************************************\n");
@@ -457,7 +460,7 @@ bool translator() {                                 //assembly -> machine-level 
 
     char * i = "";
     char * rest = instructions;
-    char temp[30000] = "";
+    char temp[1000000] = "";
 
     while ((i = strtok_r(rest, "\n", &rest))) {
 
@@ -603,7 +606,7 @@ bool translator() {                                 //assembly -> machine-level 
 }
 
 int main() {
-    
+
     file_handler();
     cleaner();
     first_pass_labels();
