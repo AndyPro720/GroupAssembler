@@ -270,7 +270,7 @@ void file_handler(void) {                   //File handler (for creating, access
     }
 }
 
-void cleaner(void) {                              //method for clearing whitespace and comments
+void cleaner(void) {                              //function for clearing whitespace and comments
 
     char temp[1000000] = "";
     int slash = 0;
